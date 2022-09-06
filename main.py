@@ -491,8 +491,11 @@ def verse_start(message: types.Message) -> None:
     # List containing the specific verse of the day and it's text
     verse_list = find_verse_of_the_day()
 
+    # Gets the list of subscribers to the verse of the day message
+    sub_list = db["subbed"]
+
     # Appends the user's chat id to the database
-    sub_list = db["subbed"].append(message.chat.id)
+    sub_list.append(message.chat.id)
 
     # Sets the data in the database to the new list and remove all duplicate entries
     db["subbed"] = list(dict.fromkeys(sub_list))
