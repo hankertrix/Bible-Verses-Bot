@@ -419,6 +419,9 @@ def set_version(message: types.Message, ctx: str = "") -> None:
 
     # Gets the version from the version mapping
     version_given = version_map.get(version_given, version_given)
+
+    # Gets the version list from the database
+    version_list = db["chats_version"]
       
     # Checks if the bible version given is an accepted one
     if version_given in bible_version_set:
@@ -428,7 +431,7 @@ def set_version(message: types.Message, ctx: str = "") -> None:
 
         # Tries removing the data from the database
         try:
-            db["chats_version"].remove(saved_version)
+            version_list.remove(saved_version)
 
         # If the data cannot be found, continue the execution
         except:
@@ -438,7 +441,7 @@ def set_version(message: types.Message, ctx: str = "") -> None:
         if version_given != "NIV":
 
             # Saves the new version given to the database only when it's not NIV to save space
-            db["chats_version"].append(f"{message.chat.id} {version_given}")
+            version_list.append(f"{message.chat.id} {version_given}")
 
         # The message to notifiy the chat that the version has changed
         version_changed_msg = f"The current bible version has changed to {version_given}."
@@ -454,6 +457,9 @@ def set_version(message: types.Message, ctx: str = "") -> None:
         
         # Sends the message
         reply_to(message, invalid_msg)
+
+    # Finally, set the version list in the database to the updated one
+    db["chats_version"] = list(dict.fromkeys(version_list))
 
 # Handles the /listversions command
 @bot.message_handler(commands=["listversions", "listversion"])
@@ -486,18 +492,16 @@ def verse_start(message: types.Message) -> None:
     verse_list = find_verse_of_the_day()
 
     # Appends the user's chat id to the database
-    db["subbed"].append(message.chat.id)
+    sub_list = db["subbed"].append(message.chat.id)
+
+    # Sets the data in the database to the new list and remove all duplicate entries
+    db["subbed"] = list(dict.fromkeys(sub_list))
     
     # Message to be sent to the user
     sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_list[0]} NIV \n{verse_list[1]}"
 
     # Sends the message        
     send_message(message.chat.id, sub_msg)
-
-    # Checks if the user has accidentally subscribed multiple times to receive the verse of the day and removes the extra threads
-    while len(get_id(message.chat.id)) > 1:
-        extra_thread = get_id(message.chat.id)[0]
-        db["subbed"].remove(extra_thread)
 
 # Handles the /stopverseoftheday command
 @bot.message_handler(commands=["stopverseoftheday","svotd"])
@@ -508,7 +512,10 @@ def verse_stop(message: types.Message) -> None:
 
         # Gets their chat id from the database and removes it
         relevant_thread = get_id(message.chat.id)[0]
-        db["subbed"].remove(relevant_thread)
+        sub_list = db["subbed"].remove(relevant_thread)
+
+        # Sets the list in the database to the new list after removing duplicate entries
+        db["subbed"] = list(dict.fromkeys(sub_list))
 
         # Message to acknowledge that they have been unsubscribed
         stop_msg = "You will no longer receive the verse of the day daily. To re-enable, use the /verseoftheday or /votd command."
