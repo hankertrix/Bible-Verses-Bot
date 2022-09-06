@@ -11,6 +11,7 @@ Flask = "^2.0.2"
 httpx = "^0.22.0"
 lxml = "^4.7.1"
 pyTelegramBotAPI = "^4.7.0"
+typing-extensions = "^4.3.0"
 
 [tool.poetry.dev-dependencies]
 Cython = "^0.29.32"

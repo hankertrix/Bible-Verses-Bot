@@ -279,6 +279,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "typing-extensions"
+version = "4.3.0"
+description = "Backported and Experimental Type Hints for Python 3.7+"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "urllib3"
 version = "1.26.12"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -320,7 +328,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c20e86f17204a1b0d106be84bc54d571a951b997b0bce1ce87115f64f1e65b6f"
+content-hash = "2cf80c7019ce0dce6ebc550acbdfa0228f71d11e2146a0196677abed5330ccb3"
 
 [metadata.files]
 anyio = []
@@ -345,6 +353,7 @@ requests = []
 rfc3986 = []
 sniffio = []
 soupsieve = []
+typing-extensions = []
 urllib3 = []
 werkzeug = []
 zipp = []
