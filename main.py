@@ -1633,7 +1633,7 @@ def run_threads() -> None:
     check_time()
 
     # Calls the send update function in a thread
-    threading.Thread(target=send_update, daemon=True).start()
+    # threading.Thread(target=send_update, daemon=True).start()
 
 # A test function for debugging and testing purposes
 def test() -> None:
