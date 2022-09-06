@@ -1638,8 +1638,8 @@ def keep_itself_up():
 
             try:
       
-                # Sends a request to it's own url
-                s.get("https://Bible-Verses-Bot-V9.hankertrix.repl.co")
+                # Sends a request to its own url
+                s.get("https://bible-verses-bot.onrender.com")
 
                 # Breaks the loop if it's successful
                 break
@@ -1677,7 +1677,7 @@ def debug(message: types.Message) -> None:
     if message.chat.id != int(os.environ["DEV_ID"]):
         return
   
-    msg = f'{db["subbed"] = }\n\n{db["chats_version"] = }\n\n{db["previous_sent_time"] = }\n\n{TimeCheck.instances[0].__dict__}'
+    msg = f'db["subbed"] = {db["subbed"]}\n\ndb["chats_version"] = {db["chats_version"]}\n\ndb["previous_sent_time"] = {db["previous_sent_time"]}\n\n{TimeCheck.instances[0].__dict__}'
     send_message(message.chat.id, msg)
 
 # Name safeguard
