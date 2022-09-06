@@ -429,13 +429,8 @@ def set_version(message: types.Message, ctx: str = "") -> None:
         # The list containing the chat id and the saved bible version
         saved_version = obtain_version(message.chat.id)
 
-        # Tries removing the data from the database
-        try:
-            version_list.remove(saved_version)
-
-        # If the data cannot be found, continue the execution
-        except:
-            pass
+        # Removes the saved version if found
+        version_list = [version for version in version_list if version != saved_version]
 
         # Checks if the version is not NIV
         if version_given != "NIV":
@@ -510,16 +505,14 @@ def verse_start(message: types.Message) -> None:
 @bot.message_handler(commands=["stopverseoftheday","svotd"])
 def verse_stop(message: types.Message) -> None:
 
+    # Gets list of chat ids for the user (should be 0 or 1 in length)
+    chat_id_list = get_id(message.chat.id)
+
     # Checks if the user has subscribed before
-    if len(chat_id_list := get_id(message.chat.id)) != 0:
+    if len(chat_id_list) != 0:
 
         # Gets their chat id from the database and removes it
-        chat_id = chat_id_list[0]
-        sub_list = db["subbed"]
-        sub_list.remove(chat_id)
-
-        # Sets the list in the database to the new list after removing duplicate entries
-        db["subbed"] = list(dict.fromkeys(sub_list))
+        db["subbed"] = [sub for sub in db["subbed"] if sub != chat_id_list[0]]
 
         # Message to acknowledge that they have been unsubscribed
         stop_msg = "You will no longer receive the verse of the day daily. To re-enable, use the /verseoftheday or /votd command."
@@ -572,7 +565,7 @@ def send_verse_of_the_day() -> None:
 class MessageMatch:
 
     # Using slots so the bot runs faster and uses less memory
-    __slots__ = ["msg", "matches", "matches_index", "dic"]
+    __slots__ = ("msg", "matches", "matches_index", "dic")
     
     def __init__(self, msg: str) -> None:
         self.msg = msg
@@ -1527,14 +1520,9 @@ def check_backticks(index: int, text: str) -> int:
 # Function to remove the specific message id from the database
 def remove_from_db(message_id: int) -> None:
 
-    # Tries to remove the message id from the verse of the day database
-    try:
-        db["subbed"].remove(message_id)
+    # Filters to remove the message id from the verse of the day database
+    db["subbed"] = [sub for sub in db["subbed"] if sub != message_id]
 
-    # Does nothing if the message id is not in the verse of the day database
-    except ValueError:
-        pass
-    
     # Filters the version database to remove the message id from the list
     db["chats_version"] = [version for version in db["chats_version"] if not version.startswith(str(message_id))]
 
