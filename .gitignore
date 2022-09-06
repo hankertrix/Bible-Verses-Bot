@@ -1,6 +1,9 @@
 
-# replit files
+# Replit files
 .replit
 
-# python cache files
+# Python cache files
 __pycache__/
+
+# Compiled C extensions
+*.so
