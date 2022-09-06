@@ -10,7 +10,7 @@ def main() -> None:
     return "Your bot is alive!"
 
 def run() -> None:
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host="0.0.0.0", port=8080)
 
 def keep_alive() -> None:
     server = Thread(target=run)
