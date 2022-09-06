@@ -1626,6 +1626,32 @@ def send_update() -> None:
         # Pauses the function for 5 minutes
         time.sleep(300)
 
+# Function to keep the bot alive
+def keep_bot_alive() -> None:
+
+    # Infinite loop for the bot to keep running
+    while True:
+
+        # Continuously try until the request is successful
+        while True:
+
+            try:
+
+                # Gets the bot url
+                s.get("https://bible-verses-bot.onrender.com")
+
+                # Breaks the loop if its successful
+                break
+
+            # Catch and log any exceptions
+            except Exception as e:
+                logging.error(e)
+
+        # Pauses the function for 5 minutes before trying again
+        time.sleep(300)
+
+    
+      
 # Function to run all the threads
 def run_threads() -> None:
 
@@ -1634,6 +1660,9 @@ def run_threads() -> None:
 
     # Calls the send update function in a thread
     # threading.Thread(target=send_update, daemon=True).start()
+
+    # Calls the function to keep the bot alive in a thread
+    threading.Thread(target=keep_bot_alive, daemon=True).start()
 
 # A test function for debugging and testing purposes
 def test() -> None:
