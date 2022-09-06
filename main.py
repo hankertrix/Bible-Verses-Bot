@@ -511,11 +511,12 @@ def verse_start(message: types.Message) -> None:
 def verse_stop(message: types.Message) -> None:
 
     # Checks if the user has subscribed before
-    if len(get_id(message.chat.id)) != 0:
+    if len(chat_id_list := get_id(message.chat.id)) != 0:
 
         # Gets their chat id from the database and removes it
-        relevant_thread = get_id(message.chat.id)[0]
-        sub_list = db["subbed"].remove(relevant_thread)
+        chat_id = chat_id_list[0]
+        sub_list = db["subbed"]
+        sub_list.remove(chat_id)
 
         # Sets the list in the database to the new list after removing duplicate entries
         db["subbed"] = list(dict.fromkeys(sub_list))
@@ -1637,33 +1638,6 @@ def send_update() -> None:
         # Pauses the function for 5 minutes
         time.sleep(300)
 
-# Function to keep the bot alive
-def keep_itself_up():
-
-    # Infinite loop so that it'll stay alive
-    while True:
-
-        # Infinite loop so the bot keeps trying
-        while True:
-
-            try:
-      
-                # Sends a request to its own url
-                s.get("https://bible-verses-bot.onrender.com")
-
-                # Breaks the loop if it's successful
-                break
-    
-            # Handles any exceptions
-            except Exception as e:
-
-                # Logs the error
-                logging.error(e)
-
-
-        # Pauses the program for 5 minutes
-        time.sleep(300)
-
 # Function to run all the threads
 def run_threads() -> None:
 
@@ -1672,9 +1646,6 @@ def run_threads() -> None:
 
     # Calls the send update function in a thread
     threading.Thread(target=send_update, daemon=True).start()
-
-    # Calls the function to keep the bot up in a thread
-    threading.Thread(target=keep_itself_up, daemon=True).start()
 
 # A test function for debugging and testing purposes
 def test() -> None:
