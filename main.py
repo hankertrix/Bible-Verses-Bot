@@ -1560,6 +1560,12 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
                     # Exit the function
                     return
 
+                # If the error is the replied message not found
+                elif e.description == "Bad Request: replied message not found":
+
+                    # Exit the funcion
+                    return
+
                 # If it's some other error
                 else:
 
