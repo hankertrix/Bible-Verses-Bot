@@ -1671,7 +1671,7 @@ def run_threads() -> None:
     check_time()
 
     # Calls the send update function in a thread
-    # threading.Thread(target=send_update, daemon=True).start()
+    threading.Thread(target=send_update, daemon=True).start()
 
     # Calls the function to keep the bot alive in a thread
     threading.Thread(target=keep_bot_alive, daemon=True).start()
