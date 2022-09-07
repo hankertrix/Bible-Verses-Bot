@@ -1545,20 +1545,26 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
             # Logs the error
             logging.error(e)
             
-            # Checks if the error is due to the user blocking the bot
+            # Checks if the error is a Telegram API exception
             if isinstance(e, ApiTelegramException):
 
-                # Remove the user from the database
-                # remove_from_db(message_id)
+                # Checks if the error is due to the user being deleted
+                if e.description == "Bad Request: chat not found":
 
-                # Logs the exception description
-                logging.error(e.description)
+                    # Remove the user from the database
+                    remove_from_db(message_id)
+    
+                    # Logs the user deleted
+                    logging.debug(message_id)
+    
+                    # Exit the function
+                    return
 
-                # Logs the user deleted
-                logging.debug(message_id)
+                # If it's some other error
+                else:
 
-                # Exit the function
-                return
+                    # Logs the exception description
+                    logging.error(e.description)
 
 
 # The function to use in place of bot.reply_to() to force the bot to send a reply even if the connection is lost or an error occurs while sending the reply
