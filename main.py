@@ -1551,8 +1551,8 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
             # Checks if the error is a Telegram API exception
             if isinstance(e, ApiTelegramException):
 
-                # Checks if the error is due to the user being deleted
-                if e.description == "Bad Request: chat not found":
+                # Checks if the error is one of those in the set
+                if e.description in {"Bad Request: chat not found", "Forbidden: bot was kicked from the supergroup chat"}:
 
                     # Remove the user from the database
                     remove_from_db(message_id)
@@ -1561,12 +1561,6 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
                     logging.debug(message_id)
     
                     # Exit the function
-                    return
-
-                # If the error is the replied message not found
-                elif e.description == "Bad Request: replied message not found":
-
-                    # Exit the funcion
                     return
 
                 # If it's some other error
@@ -1593,6 +1587,10 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
         # Logs the error if the message isn't sent successfully
         except Exception as e:
             logging.error(e)
+
+            # If the error is that the replied message isn't found then exit the function
+            if e.description in {"Bad Request: replied message not found"}:
+                return
 
 # Function to start the time checking thread
 def check_time() -> None:
