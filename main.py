@@ -106,7 +106,7 @@ from request_sess import s
 from telebot import TeleBot, types
 from telebot.apihelper import ApiTelegramException
 from bs4 import BeautifulSoup
-from database_wrapper import db
+from firebase_wrapper import Database
 from typing import List, Tuple, Optional
 from bible_books import bible_dict, bible_chapt_dict
 from bible_versions import bible_version_tuple, apocrypha_supported, bible_version_set, version_map
@@ -123,6 +123,9 @@ logging.basicConfig(format='%(levelname)s: %(asctime)s - %(message)s', level=log
 
 # Starts the server
 keep_alive.keep_alive()
+
+# Initialise the database
+db = Database()
 
 # Bot API key
 API_KEY = os.environ["API_KEY"]
