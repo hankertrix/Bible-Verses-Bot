@@ -32,7 +32,7 @@ class NextStepHandler():
     return self.convos.get(f"{convo_name}_convo {chat_id}") == step
 
   def clear_step_handler(self, convo_name: str, chat_id: int) -> None:
-    """Function to clear the step handler for a function and chat id. Must be called at the end of a conversation"""
+    """Function to clear the step handler for a function and chat id. Must always be called at the end of a conversation"""
 
     # Removes the entry from the dictionary
     self.convos.pop(f"{convo_name}_convo {chat_id}")
