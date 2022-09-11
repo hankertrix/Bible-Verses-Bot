@@ -462,7 +462,7 @@ def set_version(message: types.Message, ctx: str = "") -> None:
     else:
         
         # The message to send to the chat
-        invalid_msg = f"You have given me an invalid bible version. \n{get_version(message)} remains as the current bible version. Use the /setversion command to try again."
+        invalid_msg = f"You have given me an invalid bible version. \n{get_version(message)} remains as the current bible version.\nUse the /setversion command to try again."
         
         # Sends the message
         reply_to(message, invalid_msg)
