@@ -225,7 +225,7 @@ class TimeCheck(threading.Thread):
                     time.sleep(1)
 
 # The function to call when there is an inline query
-@bot.inline_handler(lambda message: True)
+@bot.inline_handler(lambda query: True)
 def inline_handler(inline_query: types.InlineQuery) -> None:
 
     # Calls the answer function using a thread
@@ -1302,7 +1302,9 @@ class GetVerse(threading.Thread):
 def verse_handler(message: types.Message) -> None:
 
     # Removes the command from the message
-    msg = message.text.lower().replace("\/verse ", "").strip()
+    msg = message.text.lower().replace(r"/verse", "").strip()
+
+    print(msg)
 
     # Checks if the msg still has other words
     if msg:
