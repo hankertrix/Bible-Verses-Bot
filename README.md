@@ -12,4 +12,4 @@ A telegram bot that helps you to search bible verses. It uses [BibleGateway](htt
 `/setversion` : Change the current bible version.  
 `/listversions` : Display the list of supported bible versions.  
 `/verseoftheday` / `/votd` : Subscribe to the verse of the day.  
-`/stopverseoftheday` / `svotd` : Unsubscribe from the verse of the day.  
+`/stopverseoftheday` / `/svotd` : Unsubscribe from the verse of the day.  
