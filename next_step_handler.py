@@ -15,7 +15,7 @@ class NextStepHandler():
     # The name of the entry into the dictionary
     entry = f"{convo_name}_convo {message.from_user.id} {message.chat.id}"
 
-    # Checks if the function name and chat id is not inside the dictionary
+    # Checks if the function name and chat id is not inside the dictionary or if the step is higher than the maximum number of steps
     if self.convos.get(entry) is None or self.convos.get(entry) > self.max_step:
 
       # Create the dictionary entry
