@@ -5,6 +5,7 @@
 # Replit is becoming more and more unreliable for bot hosting which is why I changed the telegram bot library to use long polling instead of TCP sockets in the previous version in the first place.
 # Wrote a database wrapper so I don't need to use the replit python package
 # Moved the httpx client to a separate folder so it can be used in the database wrapper to make requests to the database
+# All further changes after the previous are documented on the the Github page for the bot, which is https://github.com/hankertrix/Bible-Verses-Bot
 
 # Bible Verses Bot V8 changes
 # Changed the telegram bot library from pyrogram to pytelegrambotapi as the current bot will miss a ton of messages when it is offline thanks to it using a persistent TCP connection.
@@ -269,6 +270,7 @@ def inline_answer(inline_query: types.InlineQuery) -> None:
             )
 
 # Handles the /start command
+@bot.channel_post_handler(commands=["start"])
 @bot.message_handler(commands=["start"])
 def start_handler(message: types.Message) -> None:
     
@@ -283,6 +285,7 @@ Hopefully this bot will help you in your journey with God!'''
     send_message(message.chat.id, start_msg)
 
 # Handles the /help command
+@bot.channel_post_handler(commands=["help"])
 @bot.message_handler(commands=["help"])
 def help_handler(message: types.Message) -> None:
 
@@ -371,6 +374,7 @@ def get_version(message: types.Message) -> str:
     return version
 
 # Handles the /version command
+@bot.channel_post_handler(commands=["version"])
 @bot.message_handler(commands=["version"])
 def display_version(message: types.Message) -> None:
 
@@ -384,6 +388,7 @@ def display_version(message: types.Message) -> None:
     send_message(message.chat.id, version_message)
 
 # Handles the /setversion command
+@bot.channel_post_handler(commands=["setversion"])
 @bot.message_handler(commands=["setversion"])
 def handle_version(message: types.Message) -> None:
 
@@ -460,6 +465,7 @@ def set_version(message: types.Message, ctx: str = "") -> None:
     db["chats_version"] = list(dict.fromkeys(version_list))
 
 # Handles the /listversions command
+@bot.channel_post_handler(commands=["listversions", "listversion"])
 @bot.message_handler(commands=["listversions", "listversion"])
 def list_bible_versions(message: types.Message) -> None:
 
@@ -483,6 +489,7 @@ def get_id(message_id: int) -> List[int]:
     return [chat_id for chat_id in db["subbed"] if chat_id == message_id]
 
 # Handles the /verseoftheday command
+@bot.channel_post_handler(commands=["verseoftheday","votd"])
 @bot.message_handler(commands=["verseoftheday","votd"])
 def verse_start(message: types.Message) -> None:
 
@@ -505,6 +512,7 @@ def verse_start(message: types.Message) -> None:
     send_message(message.chat.id, sub_msg)
 
 # Handles the /stopverseoftheday command
+@bot.channel_post_handler(commands=["stopverseoftheday","svotd"])
 @bot.message_handler(commands=["stopverseoftheday","svotd"])
 def verse_stop(message: types.Message) -> None:
 
@@ -1298,13 +1306,12 @@ class GetVerse(threading.Thread):
             reply_to(self.message, invalid_msg)
 
 # Handles the command /verse
+@bot.channel_post_handler(commands=["verse"])
 @bot.message_handler(commands=["verse"])
 def verse_handler(message: types.Message) -> None:
 
     # Removes the command from the message
     msg = message.text.lower().replace(r"/verse", "").strip()
-
-    print(msg)
 
     # Checks if the msg still has other words
     if msg:
@@ -1376,6 +1383,7 @@ class FindVerse(threading.Thread):
 
 # The message handler function that runs only when quick_check() is true
 # Main function of the bible verse search part of the bot
+@bot.channel_post_handler(func=quick_check)
 @bot.message_handler(func=quick_check)
 def find_verse(message: types.Message) -> None:
             
