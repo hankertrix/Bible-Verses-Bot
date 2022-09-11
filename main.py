@@ -112,6 +112,7 @@ from typing import List, Tuple, Optional
 from bible_books import bible_dict, bible_chapt_dict
 from bible_versions import bible_version_tuple, apocrypha_supported, bible_version_set, version_map
 from verse_match import VerseMatch
+from next_step_handler import NextStepHandler
 
 # Sets the timezone to Singapore's timezone
 # The default timezone on Replit is UTC+0
@@ -133,6 +134,9 @@ API_KEY = os.environ["API_KEY"]
 
 # Initialise the bot
 bot = TeleBot(API_KEY)
+
+# Initialise the next step handler
+handler = NextStepHandler(max_step=1)
 
 # The time to send out the verse of the day message in 24 hours
 # It should be set to (12, 0) for 12:00pm
@@ -402,7 +406,7 @@ def handle_version(message: types.Message) -> None:
         send_message(message.chat.id, "Please enter your bible version.")
 
         # Register the next step handler
-        bot.register_next_step_handler(message, set_version)
+        handler.register_next_step_handler("setversion", message.chat.id)
 
     # If there is text written behind the /setversion command
     else:
@@ -411,6 +415,8 @@ def handle_version(message: types.Message) -> None:
         set_version(message, msg_ctx)
 
 # The function to read the user's message and save the new bible version given if it's accepted
+@bot.channel_post_handler(func=lambda message: handler.check_step("setversion", message.chat.id, 1))
+@bot.message_handler(func=lambda message: handler.check_step("setversion", message.chat.id, 1))
 def set_version(message: types.Message, ctx: str = "") -> None:
 
     # Checks if the context is not given
@@ -456,13 +462,16 @@ def set_version(message: types.Message, ctx: str = "") -> None:
     else:
         
         # The message to send to the chat
-        invalid_msg = f'You have given me an invalid bible version. \n{get_version(message)} remains as the current bible version.'
+        invalid_msg = f"You have given me an invalid bible version. \n{get_version(message)} remains as the current bible version."
         
         # Sends the message
         reply_to(message, invalid_msg)
 
     # Finally, set the version list in the database to the updated one
     db["chats_version"] = list(dict.fromkeys(version_list))
+
+    # Removes the next step handler
+    handler.clear_step_handler("setversion", message.chat.id)
 
 # Handles the /listversions command
 @bot.channel_post_handler(commands=["listversions", "listversion"])
@@ -1329,9 +1338,11 @@ def verse_handler(message: types.Message) -> None:
         send_message(message.chat.id, "Please enter your bible verses.")
 
         # Registers the next step handler
-        bot.register_next_step_handler(message, get_verse)
+        handler.register_next_step_handler("verse", message.chat.id)
     
 # Searches for the bible verse given previously through the command /verse
+@bot.channel_post_handler(func=lambda message: handler.check_step("verse", message.chat.id, 1))
+@bot.message_handler(func=lambda message: handler.check_step("verse", message.chat.id, 1))
 def get_verse(message: types.Message) -> None:
 
     # Initialises a thread from the GetVerse class
@@ -1339,6 +1350,9 @@ def get_verse(message: types.Message) -> None:
     
     # Starts the thread
     thread.start()
+
+    # Removes the next step handler
+    handler.clear_step_handler("verse", message.chat.id)
 
 # A function to quickly check if a message contains a bible verse
 def quick_check(message: types.Message) -> bool:
@@ -1697,8 +1711,9 @@ def debug(message: types.Message) -> None:
 
     if message.chat.id != int(os.environ["DEV_ID"]):
         return
-  
-    msg = f'db["subbed"] = {db["subbed"]}\n\ndb["chats_version"] = {db["chats_version"]}\n\ndb["previous_sent_time"] = {repr(db["previous_sent_time"])}\n\n{TimeCheck.instances[0].__dict__}'
+
+    msg = f"{handler.convos}"
+    # msg = f'db["subbed"] = {db["subbed"]}\n\ndb["chats_version"] = {db["chats_version"]}\n\ndb["previous_sent_time"] = {repr(db["previous_sent_time"])}\n\n{TimeCheck.instances[0].__dict__}'
     send_message(message.chat.id, msg)
 
 # Name safeguard
