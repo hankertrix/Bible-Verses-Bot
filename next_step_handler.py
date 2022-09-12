@@ -13,7 +13,7 @@ class NextStepHandler():
     """Function to register the next step of a command or conversation"""
 
     # The name of the entry into the dictionary
-    entry = f"{convo_name}_convo {message.from_user.id} {message.chat.id}"
+    entry = f"{convo_name}_convo {message.chat.id if message.from_user is None else message.from_user.id} {message.chat.id}"
 
     # Checks if the function name and chat id is not inside the dictionary or if the step is higher than the maximum number of steps
     if self.convos.get(entry) is None or self.convos.get(entry) > self.max_step:
@@ -31,13 +31,13 @@ class NextStepHandler():
     """Function to check the step in the filters for the message handlers"""
 
     # Returns whether the step is inside the dictionary
-    return self.convos.get(f"{convo_name}_convo {message.from_user.id} {message.chat.id}") == step
+    return self.convos.get(f"{convo_name}_convo {message.chat.id if message.from_user is None else message.from_user.id} {message.chat.id}") == step
 
   def clear_step_handler(self, convo_name: str, message: types.Message) -> None:
     """Function to clear the step handler for a function and chat id. Must always be called at the end of a conversation"""
 
     # Removes the entry from the dictionary
-    self.convos.pop(f"{convo_name}_convo {message.from_user.id} {message.chat.id}")
+    self.convos.pop(f"{convo_name}_convo {message.chat.id if message.from_user is None else message.from_user.id} {message.chat.id}")
 
     
 
