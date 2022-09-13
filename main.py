@@ -144,6 +144,9 @@ verse_of_the_day_time: Tuple[int] = (12, 0)
 
 # Multi-threading so the bot can still run while giving the verse of the day daily
 class TimeCheck(threading.Thread):
+
+    # Have empty slots so the a dictionary isn't created for this class
+    __slots__ = []
     
     # List of TimeCheck instances
     instances = []
@@ -1289,6 +1292,9 @@ def search_verse(message: Optional[types.Message] = "", inline_query: Optional[t
 
 # A class to handle the get_verse() function
 class GetVerse(threading.Thread):
+
+    # Slots to save memory
+    __slots__ = ["message"]
     
     def __init__(self, message: types.Message) -> None:
         threading.Thread.__init__(self)
@@ -1374,6 +1380,9 @@ def quick_check(message: types.Message) -> bool:
 
 # A class to handle the find_verse() function
 class FindVerse(threading.Thread):
+
+    # Slots to save memory
+    __slots__ = ["message"]
 
     def __init__(self, message: types.Message) -> None:
         threading.Thread.__init__(self)

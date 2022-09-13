@@ -33,6 +33,10 @@ class Database(abc.MutableMapping):
   """A dictionary-like database wrapper for firebase"""
 
   
+  # Slots to save memory
+  __slots__ = ["db"]
+
+  
   def __init__(self) -> None:
     self.db = db
 

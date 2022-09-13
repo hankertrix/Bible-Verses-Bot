@@ -5,6 +5,9 @@ from telebot import types
 class NextStepHandler():
   """Class to handle the next step of a command or conversation"""
 
+  # Slots to save memory
+  __slots__ = ["convos", "max_step"]
+
   def __init__(self, *, max_step: int) -> None:
     self.convos = {}
     self.max_step = max_step
