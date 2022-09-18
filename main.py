@@ -108,7 +108,7 @@ from telebot import TeleBot, types
 from telebot.apihelper import ApiTelegramException
 from bs4 import BeautifulSoup
 from firebase_wrapper import Database
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Callable, Dict
 from bible_books import bible_dict, bible_chapt_dict
 from bible_versions import bible_version_tuple, apocrypha_supported, bible_version_set, version_map
 from verse_match import VerseMatch
@@ -232,8 +232,58 @@ class TimeCheck(threading.Thread):
                     # Pauses the program for one second so that it doesn't miss the timing to send the verse of the day
                     time.sleep(1)
 
+# The function to debounce the inline query
+def debounce_inline_query(duration: float) -> Callable:
+
+    # The decorator within to decorate the inline query handler with the debounce
+    def decorator(inline_query_handler: Callable[[types.InlineQuery], None]) -> Callable[[types.InlineQuery], None]:
+
+        # The dictionary of inline queries from different users
+        inline_query_dict: Dict[str, threading.Timer] = {}
+
+        # The actual debounce function that pauses the inline query handler until the wait duration has passed
+        def actual_debounce(inline_query: types.InlineQuery) -> None:
+
+            # Grabs the inline query dictionary from the decorator
+            nonlocal inline_query_dict
+
+            # Gets the user id from the inline query
+            user_id: int = inline_query.from_user.id
+
+            # The function to wrap the inline query handler so it can be called in a thread
+            def call_handler(user_id: int) -> None:
+
+                # Remove the inline query handler for the user from the dictionary
+                inline_query_dict.pop(user_id, None)
+
+                # Calls the inline query handler
+                inline_query_handler(inline_query)
+
+            # Tries to cancel the timer on the current calling inline query handler
+            try:
+                inline_query_dict[user_id].cancel()
+
+            # If the current inline query is not found in the dictionary, skip cancelling the timer
+            except KeyError:
+                pass
+
+            # Add the handler for this inline query to the dictionary
+            inline_query_dict[user_id] = threading.Timer(duration, call_handler, [user_id])
+
+            # Starts the timer
+            inline_query_dict[user_id].start()
+
+
+        # Returns the actual debounce function
+        return actual_debounce
+
+    # Returns the decorator
+    return decorator
+
+  
 # The function to call when there is an inline query
-@bot.inline_handler(lambda query: True)
+@bot.inline_handler(lambda query: quick_check(query.query))
+@debounce_inline_query(1)
 def inline_handler(inline_query: types.InlineQuery) -> None:
 
     # Calls the answer function using a thread
@@ -242,7 +292,7 @@ def inline_handler(inline_query: types.InlineQuery) -> None:
 # Function to respond to the inline query
 def inline_answer(inline_query: types.InlineQuery) -> None:
 
-    # Get the verse using the search_verse_inline function
+    # Get the verse using the search_verse function
     verse = search_verse(inline_query=inline_query, inline=True)
 
     # Checks if the verse is too long
@@ -1361,10 +1411,10 @@ def get_verse(message: types.Message) -> None:
     handler.clear_step_handler("verse", message)
 
 # A function to quickly check if a message contains a bible verse
-def quick_check(message: types.Message) -> bool:
+def quick_check(message: str) -> bool:
 
     # Makes the message lower case
-    msg = message.text.lower()
+    msg = message.lower()
 
     # Runs through all the different checks
     if check_num_portion(msg):
@@ -1406,8 +1456,8 @@ class FindVerse(threading.Thread):
 
 # The message handler function that runs only when quick_check() is true
 # Main function of the bible verse search part of the bot
-@bot.channel_post_handler(func=quick_check)
-@bot.message_handler(func=quick_check)
+@bot.channel_post_handler(func=lambda message: quick_check(message.text))
+@bot.message_handler(func=lambda message: quick_check(message.text))
 def find_verse(message: types.Message) -> None:
             
     # If there aren't, initialises a thread from the FindVerse class
