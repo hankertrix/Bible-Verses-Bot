@@ -1256,9 +1256,21 @@ async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
 
             # Appends the task to the tasks list
             tasks.append(task)
-        
-        # The response objects
-        reqs = await asyncio.gather(*tasks)
+
+        # Infinite loop so the bot keeps trying
+        while True:
+            
+            try:
+                
+                # The response objects
+                reqs = await asyncio.gather(*tasks)
+    
+                # Breaks the loop if successful
+                break;
+
+            # Catch any error and logs them
+            except Exception as e:
+                logging.error(e)
     
     # Returns the list of htmls returned by the httpx module
     return [req.text for req in reqs]
