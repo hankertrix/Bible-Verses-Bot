@@ -1746,7 +1746,7 @@ def keep_bot_alive() -> None:
             try:
 
                 # Gets the bot url
-                s.get("https://bible-verses-bot.onrender.com")
+                s.get("https://bible-verses-bot-8u5d.onrender.com")
 
                 # Breaks the loop if its successful
                 break
