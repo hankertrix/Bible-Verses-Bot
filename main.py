@@ -1647,7 +1647,7 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
             if isinstance(e, ApiTelegramException):
 
                 # Checks if the error is one of those in the set
-                if e.description in {"Bad Request: chat not found", "Forbidden: bot was kicked from the supergroup chat"}:
+                if e.description in {"Bad Request: chat not found", "Forbidden: bot was kicked from the supergroup chat", "Forbidden: bot was kicked from the group chat"}:
 
                     # Remove the user from the database
                     remove_from_db(message_id)
@@ -1746,7 +1746,7 @@ def keep_bot_alive() -> None:
             try:
 
                 # Gets the bot url
-                s.get("https://bible-verses-bot-dxvs.onrender.com")
+                s.get("https://bible-verses-bot.onrender.com")
 
                 # Breaks the loop if its successful
                 break
