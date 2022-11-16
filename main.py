@@ -616,7 +616,7 @@ def find_verse_of_the_day() -> List[str]:
     verse_name = re.sub(r",\d\d?", "", verse_name)
     verse_of_the_day_raw = soup_search.find("div", {"id" : "verse-text"}).get_text()
     verse_of_the_day = "\u200e" + re.sub("\n +", "\n", verse_of_the_day_raw.strip())
-    vlist = [verse_name, verse_of_the_day]
+    vlist = [verse_name.strip(), verse_of_the_day.strip()]
     return vlist
 
 # Function to send the verse of the day
