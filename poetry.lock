@@ -163,7 +163,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.70.0"
+version = "2.71.0"
 description = "Google API Client Library for Python"
 category = "main"
 optional = false
@@ -284,7 +284,7 @@ requests = ["requests (>=2.18.0,<3.0.0dev)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.57.0"
+version = "1.57.1"
 description = "Common protobufs used in Google APIs"
 category = "main"
 optional = false
