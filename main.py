@@ -1316,11 +1316,11 @@ def search_verse(message: Optional[types.Message] = "", inline_query: Optional[t
     match_obj_list = []
 
     # Iterates through the dictionary created by the message match object
-    for index in dic:
-        
+    for [book, chapter, start_verse, end_verse, version] in dic.values():
+
         # Create a match object for every match in the dictionary
         # The match object grabs the data from the message match object
-        match_obj = VerseMatch(msg=msg, book=dic[index][0], match=[dic[index][1], dic[index][2], dic[index][3]], version=choose_version(default_version, dic[index][4]))
+        match_obj = VerseMatch(msg=msg, book=book, match=[chapter, start_verse, end_verse], version=choose_version(default_version, version))
 
         # Appends the match object to a list
         match_obj_list.append(match_obj)

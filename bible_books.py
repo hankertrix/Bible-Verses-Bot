@@ -4,7 +4,7 @@
 bibleshort = (
 
 # Standard chapters  
-"gen","exo","ex","lev","num","deu","jos","judg","rut","1 sam","2 sam","1 kin","2 kin","1 chr","2 chr","ezr","neh","est","job","psa","ps","pro","ecc","son","sol","isa","jer","lam","eze","dan","hos","joe","amo","oba","jon","mic","nah","hab","zep","hag","zec","mal","mat","mar","mk","luk","joh","jn","jhn","act","rom","1 cor","2 cor","gal","eph","phili","phil","col","1 the","2 the","1 tim","2 tim","tit","phile","phlm","heb","jam","1 pet","2 pet","1 joh","1 jhn","2 jhn","2 joh","3 joh","jude","rev",
+"gen","exo","ex","lev","num","deu","jos","judg","rut","1 sam","2 sam","1 kin","2 kin","1 chr","2 chr","ezr","neh","est","job","psa","ps","pro","ecc","son","sol","isa","jer","lam","eze","dan","hos","joe","amo","oba","jon","mic","nah","hab","zep","hag","zec","mal","mt","mat","mar","mk","luk","joh","jn","jhn","act","rom","1 cor","2 cor","gal","eph","phili","phil","col","1 the","2 the","1 tim","2 tim","tit","phile","phlm","heb","jam","1 pet","2 pet","1 joh","1 jhn","2 jhn","2 joh","3 joh","jude","rev",
 
 # Apocryphas
 "tob","judi","greek est","wis","sir","bar","of jer","aza","sus","bel","dra","1 mac","2 mac","1 esd","man","of man","3 mac","2 esd","4 mac","men","to est"
@@ -14,7 +14,7 @@ bibleshort = (
 biblecode = (
 
 # Standard chapters  
-"Gen","Exod","Exod","Lev","Num","Deut","Josh","Judg","Ruth","1Sam","2Sam","1Kgs","2Kgs","1Chr","2Chr","Ezra","Neh","Esth","Job","Ps","Ps","Prov","Eccl","Song","Song","Isa","Jer","Lam","Ezek","Dan","Hos","Joel","Amos","Obad","Jonah","Mic","Nah","Hab","Zeph","Hag","Zech","Mal","Matt","Mark","Mark","Luke","John","John","John","Acts","Rom","1Cor","2Cor","Gal","Eph","Phil","Phil","Col","1Thess","2Thess","1Tim","2Tim","Titus","Phlm","Phlm","Heb","Jas","1Pet","2Pet","1John", "1John","2John","2John","3John","Jude","Rev",
+"Gen","Exod","Exod","Lev","Num","Deut","Josh","Judg","Ruth","1Sam","2Sam","1Kgs","2Kgs","1Chr","2Chr","Ezra","Neh","Esth","Job","Ps","Ps","Prov","Eccl","Song","Song","Isa","Jer","Lam","Ezek","Dan","Hos","Joel","Amos","Obad","Jonah","Mic","Nah","Hab","Zeph","Hag","Zech","Mal","Matt","Matt","Mark","Mark","Luke","John","John","John","Acts","Rom","1Cor","2Cor","Gal","Eph","Phil","Phil","Col","1Thess","2Thess","1Tim","2Tim","Titus","Phlm","Phlm","Heb","Jas","1Pet","2Pet","1John", "1John","2John","2John","3John","Jude","Rev",
 
 # Apocryphas
 "Tob","Jdt","GkEsth","Wis","Sir","Bar","EpJer","PrAzar","Sus","Bel","Bel","1Macc","2Macc","1Esd","PrMan","PrMan","3Macc","2Esd","4Macc","SgThree","AddEsth"
