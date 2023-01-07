@@ -1,0 +1,95 @@
+Bible Verses Bot V9 changes
+- Moving the bot off of replit to another hosting platform so the bot can truly be up 24/7.
+- Replit is becoming more and more unreliable for bot hosting which is why I changed the telegram bot library to use long polling instead of TCP sockets in the previous version in the first place.
+- Wrote a database wrapper so I don't need to use the replit python package
+- Moved the httpx client to a separate folder so it can be used in the database wrapper to make requests to the database
+- All further changes after the previous are documented on the the Github page for the bot, which is https://github.com/hankertrix/Bible-Verses-Bot
+
+Bible Verses Bot V8 changes
+- Changed the telegram bot library from pyrogram to pytelegrambotapi as the current bot will miss a ton of messages when it is offline thanks to it using a persistent TCP connection.
+
+Bible Verses Bot V7 changes
+- Moved the lists and dictionaries of bible books into a separate file called bible_books.py
+- Moved the lists of bible versions into a separate file called bible_versions.py
+- Moved the VerseMatch class to a separate file called verse_match.pyx
+- Wrote the VerseMatch class in Cython so that it is compiled in C and the bot can run faster (in certain instances, like running it on my home computer it's way faster, but for some reason the previous version runs much faster on the work computer than this version)
+- Removed slots from the VerseMatch class and also added a new attribute verses that is used to store and then output the verses
+- Added a thread to send updates to the monitoring bots so the bots can update me if the bot goes down
+- Changed the normal httpx client to follow redirects
+- Changed the comparisons to None to use "is" instead of the == equality operator
+- Changed the multi_num_convert function to continue the loop if the matches list is just a list with one empty character
+- Changed the remove_empty function to check the length of the string in the list and use str.isspace() to cover more types of spaces
+- Changed a bunch of lists that weren't needed as lists to sets so the program can run faster, like versions_w_additions and one_chapt_books
+- Created a bible_version_set that is the same as bible_version_list (now bible_version_tuple) for faster checking
+- Also created an apocrypha_supported_set that is the same as apocrypha_supported for faster checking
+- Removed all the list to set conversions as it only introduces overhead and doesn't speed up the code (probably slows it down instead)
+- Changed the hardcoded lists (bible_version_list -> bible_version_tuple, biblecode, bibleshort, bible_chapt, bible_chapt_code, apocrypha_supported) to tuples to save memory and hopefully make the code run faster
+- Added another check to the send_message function to check for the channel being deleted and then remove the channel from the database
+- Added a check to the /verse command handler function verse_handler to be able to search verses immediately instead of prompting again when the verse is passed together with the command
+- Changed how the thread works so the bot will keep trying to send the update if the server responds with a 404 and also the bot will not keep trying both requests only one errors out
+- Moved the sending of the verse of the day portion of the DayCheck thread into a function so I can call it anytime
+- Changed all references to NRSV to NRSVUE as biblegateway only supports NRSVUE, especially in the VerseMatch class and the function to handle the /help command
+- Added a line in the reply to the /help command to say that searches using NRSV as the bible version will be automatically changed to NRSVUE
+- Added a version map so older versions like NRSV that are no longer supported by biblegateway are mapped to the new, supported version, like NRSVUE
+- Changed the set_version function to try getting the version from the version map first before updating the version
+- Changed the search_version function of the MessageMatch class to get the bible version from the version mapping if it is inside the map
+- Changed the sending of the verse of the day to be more robust
+- Now it saves the previous time that the bot has sent the message and sends the message only when that previous time is a day before and the current time is after 12pm
+- Removed the trusty sleep of 2 minutes after sending the verse of the day as that is not neccessary anymore
+- This means that I no longer have to manually send the verse of the day message if the bot fails to do so because it's down
+- Made the time to send the verse of the day a variable, which is a tuple representing the hour and minute for easier testing
+- Made the program pause for 10 seconds in the event of the bot failing to send the message at the correct time so that errors don't occur
+- Added a one second pause after the program is done sleeping so it doesn't miss the timing to send the verse of the day
+
+Bible Verses Bot V6 changes
+- Used slots for the MessageMatch and VerseMatch class to speed up the bot and also use less memory
+- Added type hinting for every function so the code is easier to maintain
+- Forked the code and made it a new version because the previous one was using quite a bit more memory than this one
+- Removed the remove_duplicates and the output_verse functions from the VerseMatch class
+- Moved the functionality of the remove_duplicates and the output_verse function to search_verse
+- This allows the bot to handle multiple searches concurrently instead of waiting for the previous one to finish
+- Removed the class attribute instances in the VerseMatch class since there is no need for it any more
+- Removed the get_match class method of the VerseMatch class since there is no need for it any more
+- Removed the class attribute threads in the Find Verse and GetVerse classes
+- Changed how search_verse works so that the function can take inline queries as well as normal messages
+- Removed the functions search_verse_inline and get_verse_inline
+- Used lxml as the BeautifulSoup parser for the find_verse_of_the_day function and for the html_soup object in the get_verses function of the VerseMatch class
+
+Bible Verses Bot V5 changes
+- Placed all the regex for the searching of the bible verses in a separate file so I don't have to keep changing every one when I edit one
+- Edited all the regex to include the bible version behind
+- Added a function to pull out the bible version from the text
+- Removed default values from the class initialisation arguments that are never passed and just set the property to the value
+- Removed the unused message object being passed to the VerseMatch and MessageMatch class
+- Moved the clearing of VerseMatch instances to the VerseMatch class output_verse method
+- Added inline mode so it's much easier to send a bible verse to any chat
+- Changed the /help and /start description to include inline mode and the support for bible versions at the back of the verses
+- Changed the name of the help and start command handlers so that the function doesn't override python's native functions
+- Updated the user agent in the request headers to use an updated version of chrome and edge
+- Removed the unused match argument in MessageMatch's find_book_title function
+- Edited an earlier comment that mentioned TgCrypto compiling the entire codebase in C
+- TgCrypto just implements the encryption algorithm for Telegram in C, not the entire codebase
+- Changed all the lists in the if statements to sets for faster computation
+
+Bible Verses Bot V4 changes
+- Changed how the bot gets its html from the biblegateway.com
+- Now it does so asynchronously via the httpx module which should increase the speed of the bot, especially when handling a large number of verses
+- The url is now passed to a general function called get_webpages that returns the html response and the VerseMatch object method get_webpage is now called get_url which returns the url only
+- The VerseMatch object main method load_up_verses no longer contains the get_url function (used to be get_webpage) and regular expressions fixing up the html have been passed to the next function being called, get_verses
+- Changed relevant if statements to elif statements
+- Changed the remove_duplicates function to use a faster and more concise way by using the dictionary fromkeys method rather than iterating the list obtained from the get match function
+- Changed the sending of the verse of the day message to use threads so that all users will be able to get the message if the message fails to send to a user
+- Changed the send_message function so that it'll automatically remove the user from the database if the user blocks the bot
+- Used a list comprehension for the remove_empty function instead of the while loop, try and except and some checks
+
+Bible Verses Bot V3 changes
+- The bot's verse searching function has rewritten so the bible verses just follow the format provided by Bible Gateway.
+
+Bible Verses Bot V2 changes
+- This is just a rewrite of the old bot using a new library called pyrogram
+- The MTProto API makes this bot much less susceptible to attacks as it uses Telegram's proprietary encrpytion protocol called MTProto instead of HTTPS
+- It is now also much faster thanks to TgCrpyto using C instead of Python for Telegram's encryption protocol
+- Update: I have decided to add new functionality, including support for multiple verses separated by commas and full chapters, chapter ranges, multiple chapters (again separated by commas) and searching different version of the bible.
+- The reading portion of the VerseMatch class in the previous bot has been entirely moved to the MessageMatch class
+- The VerseMatch class now only handles the searching of the bible verse while the MessageMatch class comprehends the verses in the message and sends it in a standard format that the VerseMatch class understands
+- Tons of new functions have been added to deal with chapter ranges in bible versions like The Message
