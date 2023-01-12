@@ -114,18 +114,22 @@ class MessageMatch:
     def shorten_book(self, book: str) -> str:
 
         # Removes the ( bracket
-        book = book.replace("(","")
-        
-        # For Philippians and Philemon
-        book_title = book.strip()[:5]
-        
-        # For Judges
-        if book_title not in bible_dict:
-            book_title = book.strip()[:4]
-            
-            # For the rest of the books
-            if book_title not in bible_dict:
-                book_title = book.strip()[:3]
+        book = book.replace("(","").strip()
+
+        # Checks if the first 5, 4 and 3 characters of the book passed is inside the dictionary of bible books
+        # The first 5 characters are for the books, Philippians and Philemon
+        # The first 4 characters are for the book of Judges
+        # And the first 3 characters are for the rest of the books
+        for title in (book[:5], book[:4], book[:3]):
+
+            # If the first few characters of the book passed is found inside the dictionary of bible books
+            if title in bible_dict:
+
+                # Sets the book title to those first few characters of the book passed
+                book_title = title
+
+                # Breaks the loop
+                break
         
         # Returns the book name
         return book_title
