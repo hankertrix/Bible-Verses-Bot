@@ -127,8 +127,8 @@ class MessageMatch:
             if book_title not in bible_dict:
                 book_title = book[:3]
         
-        # Returns the book name
-        return book_title
+        # Returns the book title
+        return book_title.strip()
 
     # Finds the title of the book
     def find_book_title(self, match_index: int) -> str:
