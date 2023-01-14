@@ -1,6 +1,7 @@
 
 # Replit files
 .replit
+.nix
 
 # Python cache files
 __pycache__/

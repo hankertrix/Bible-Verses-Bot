@@ -76,12 +76,6 @@ class MessageMatch:
                     # Returns the word "greek"
                     return "greek"
                 
-                # If not
-                else:
-
-                    # Returns nothing
-                    return ""
-
             # Checks if the "book number" is f
             elif booknum == "f":
 
@@ -91,12 +85,6 @@ class MessageMatch:
                     # Returns the word "of"
                     return "of"
                 
-                # If not
-                else:
-
-                    # Returns nothing
-                    return ""
-            
             # Checks if the "book number" is o
             elif booknum == "o":
                 
@@ -106,6 +94,15 @@ class MessageMatch:
                     # Returns the word "to"
                     return "to"
 
+            # Checks if the "book number" is p
+            elif booknum == "p":
+
+                # Checks if p is part of the word ep
+                if self.msg[bookindex-1:bookindex+1] == "ep":
+
+                    # Returns the word "ep"
+                    return "ep"
+                
             # Sets the book number to nothing otherwise
             else:
                 return ""
@@ -116,10 +113,10 @@ class MessageMatch:
         # Removes the ( bracket
         book = book.replace("(","").strip()
         
-        # For Philippians and Philemon
+        # For Philippians, Philemon, Prayer of Azariah, Letter of Jeremiah, Greek Esther and Prayer of Manasseh
         book_title = book[:5]
         
-        # For Judges
+        # For Judges and all the books with numbers in front of them (e.g. 1 John, 2 Chronicles and 1 Esdras)
         if book_title not in bible_dict:
             book_title = book[:4]
             

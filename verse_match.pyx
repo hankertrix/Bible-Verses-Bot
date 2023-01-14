@@ -3,7 +3,7 @@
 import re
 import cython
 from bs4 import BeautifulSoup, element
-from bible_books import biblecode, one_chapt_books
+from bible_books import one_chapt_books, biblical_apocrypha, apocrypha_not_supported_by_catholic_ver
 from bible_versions import versions_w_additions, apocrypha_supported_set
 
 # The dictionary of normal characters to superscript characters
@@ -99,9 +99,38 @@ cdef class VerseMatch:
 
     # Function to edit the book to match with the version requested
     cdef str fix_book_and_version(self):
+
+        # Checks if the book requested is one of the books with a single chapter and the chapter number isn't 1
+        if self.book in one_chapt_books and self.match[0] != 1:
+
+            # Gets the original chapter number
+            chapter_num = self.match[0]
+
+            # Set the chapter number to 1
+            self.match[0] = 1
+
+            # If the entire chapter was requested, assume that the person wants the specific verse indicated by the chapter number (e.g. Obadiah 5 would be Obadiah 1:5)
+            if self.match[1] == 1 and self.match[2] == 177:
+
+                # Set the first verse to the chapter number
+                self.match[1] = chapter_num
+
+                # Set the last verse to 1 more than the first verse
+                self.match[2] = chapter_num + 1
+
+            # If only one verse was requested, assume that the person wanted the verses from the chapter number to the verse number (e.g. Obadiah 5:9 would be Obadiah 1:5-9)
+            elif self.match[2] == self.match[1] + 1:
+
+                # Set the last verse to the one more than the verse number requested
+                self.match[2] = self.match[1] + 1
+
+                # Set the first verse to the chapter number
+                self.match[1] = chapter_num
+
+            # If a range of verses are given, then assume that the person mistyped the chapter number (e.g. Obadiah 5:6-7 would be Obadiah 1:6-7), which means doing nothing other than changing the chapter number to 1
         
         # Checks if the bible version doesn't support apocrypha
-        if self.version not in apocrypha_supported_set and self.book in biblecode[-21:]:
+        if self.version not in apocrypha_supported_set and self.book in biblical_apocrypha:
 
             # Changes the version to the default version that supports apocrypha, NRSVUE
             self.version = "NRSVUE"
@@ -113,13 +142,13 @@ cdef class VerseMatch:
             self.version = "NRSVUE"
 
         # Checks if the version still does not support apocrypha or if the book is not part of the apocrypha
-        if self.book not in biblecode[-21:] + ("Esth","Ps") or self.version not in apocrypha_supported_set:
+        if self.book not in tuple(biblical_apocrypha) + ("Esth","Ps") or self.version not in apocrypha_supported_set:
 
             # Immediately returns the book
             return self.book
 
         # Checks if the book requested is in the apocrypha not supported by the catholic bible
-        if self.book in biblecode[-15:] and self.version not in {"CEB","NRSVUE","NRSVA","RSV","WYC"}:
+        if self.book in apocrypha_not_supported_by_catholic_ver and self.version not in {"CEB","NRSVUE","NRSVA","RSV","WYC"}:
 
             # Change the version to the default version that supports all books of the apocrypha, NRSVUE
             self.version = "NRSVUE"
@@ -200,7 +229,7 @@ cdef class VerseMatch:
         elif self.book == "Ps" and self.match[0] == 151:
 
             # Changes the book url to work with biblegateway
-            book_url = str(f"{book_search}+{self.match[0]}+{self.match[1]}-{self.match[2]-1}")
+            book_url = str(f"{book_search}+{self.match[0]}+1%3A{self.match[1]}-{self.match[2]-1}")
         
         # Checks if the verse requested is Greek Esther 5:1-2 NRSVA
         elif (self.version, self.book, self.match) == ("NRSVA", "GkEsth", [5,1,2]):
@@ -865,12 +894,6 @@ cdef class VerseMatch:
         # Grabs the verse number and subtracts 1 from it
         correct_verse_num = int(correct_verse_num) - 1
         
-        # Checks if the book requested is one of the books with a single chapter
-        if self.book in one_chapt_books:
-
-            # Changes the chapter number to 1
-            self.match[0] = 1
-
         # To add the verse number to the starting verse in bible books with a single chapter as they are not given
         # Checks if the version is EHV or HCSB
         if self.version in {"EHV","HCSB","MEV"}:
@@ -885,7 +908,7 @@ cdef class VerseMatch:
                 verses = re.sub("Jude, a|The Elder|The elder|The vision of Obadiah.|Paul, a prisoner of Christ Jesus,", self.add_verse_num, verses)
 
         # Checks if the first bible verse requested is 1 Timothy 3:1 NCB
-        elif [self.version, self.book, self.match[0], self.match[1]] == ["NCB", "1Tim", 3, 1]:
+        elif (self.version, self.book, self.match[0], self.match[1]) == ("NCB", "1Tim", 3, 1):
 
             # Changes the correct verse number to 1
             correct_verse_num = 1
