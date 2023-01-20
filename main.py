@@ -1168,6 +1168,7 @@ Psalm 119-122
 Titus 5,6-10,14
 Ezekiel 5
 Song of songs 4, 9
+2John 5
 3:00pm
 4:00 pm
 
@@ -1182,6 +1183,7 @@ Deuteronomy chapter 377
 Obadiah chapters 1,4,6
 James chapter 5-10, 15, 16
 Song of songs chapter 5-9
+1Chronicles chapter 3
 '''
 
 # Test message
@@ -1210,6 +1212,7 @@ Psalm 119-122
 Titus 5,6-10,14
 Ezekiel 5
 Song of songs 4, 9
+2John 5
 3:00pm
 4:00 pm
 
@@ -1224,4 +1227,5 @@ Deuteronomy chapter 377
 Obadiah chapters 1,4,6
 James chapter 5-10, 15, 16
 Song of songs chapter 5-9
+1Chronicles chapter 3
 '''
