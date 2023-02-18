@@ -874,24 +874,17 @@ def split_message(message: types.Message, text: str, **kwargs) -> None:
 def iterate_text(first_index: int, text: str) -> None:
 
     # Subtract 1 from the length of the text as indexing starts from 0
-    index = len(text)-1
-    logging.debug(index)
-    
-    # Starts a while loop for indexes greater than 0
-    while index > 0:
+    index = len(text) - 1
+    # logging.debug(index)
+
+    # Iterates backwards through the string
+    for i in range(index, -1, -1):
 
         # Checks if the message at the index is a newline character
-        if text[index] == "\n":
+        if text[i] == "\n":
 
             # Returns the index of the long message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
-            return first_index + check_backticks(index, text) + 1
-
-        # Decrease the index by 1 if the newline character is not found
-        index -= 1
-
-        # Safeguard to prevent an infinite loop in case a newline character cannot be found
-        if index == 0:
-          break
+            return first_index + check_backticks(i, text) + 1
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
 def check_backticks(index: int, text: str) -> int:

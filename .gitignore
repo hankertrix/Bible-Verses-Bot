@@ -5,6 +5,7 @@
 
 # Python cache files
 __pycache__/
+.cache/
 
 # Compiled C extensions
 *.so
