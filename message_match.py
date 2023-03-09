@@ -142,7 +142,7 @@ class MessageMatch:
             try:
 
                 # If the current index isn't one less than the match index, finds a space and returns the bookindex
-                if index != match_index - 1 and msg[index].isspace():
+                if msg[index].isspace() and index != match_index - 1:
                     break
 
                 # Immediately invalidates if a symbol other than a bracket is found
