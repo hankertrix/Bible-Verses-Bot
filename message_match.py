@@ -199,36 +199,33 @@ class MessageMatch:
         # Searches the string for the bible version
         match_obj = regex.search(match.strip())
 
-        # Checks if the match exists:
-        if match_obj:
-
-            # Remove the version from the match
-            match = regex.sub("", match).strip()
-
-            # Gets the bible version
-            bible_version = match_obj.group().strip().upper()
-
-            # Gets the bible version from the version mapping
-            bible_version = version_map.get(bible_version, bible_version)
-
-            # Check if the version is in the set of accepted versions
-            if bible_version in bible_version_set:
-
-                # Returns a tuple of the match and the version
-                return (match, bible_version)
+        # Checks if the bible version is not given
+        if not match_obj:
             
-            # If it's not
-            else:
+            # Returns a tuple of the match and an empty string
+            return (match, "")
 
-                # Returns a tuple of the match and an empty string
-                return (match, "")
+        # Otherwise, temove the version from the match
+        match = regex.sub("", match).strip()
+
+        # Gets the bible version
+        bible_version = match_obj.group().strip().upper()
+
+        # Gets the bible version from the version mapping
+        bible_version = version_map.get(bible_version, bible_version)
+
+        # Check if the version is in the set of accepted versions
+        if bible_version in bible_version_set:
+
+            # Returns a tuple of the match and the version
+            return (match, bible_version)
         
-        # If it doesn't exist
+        # If it's not
         else:
 
             # Returns a tuple of the match and an empty string
             return (match, "")
-
+        
     # The function to convert the multiple bible verses with a semicolon into multiple lists
     def multi_num_convert(self, book_code: str, match_index: int, match: str) -> None:
 
