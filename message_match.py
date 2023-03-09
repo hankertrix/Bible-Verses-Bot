@@ -20,12 +20,14 @@ class MessageMatch:
     
     # Converts the string in the matches to integers
     def convert_to_int(self, match_list: List[str]) -> List[int]:
-        for i in range(len(match_list)):
-            match_list[i] = int(match_list[i])
-        
-        # Returns the match_list
-        return match_list
+        return [int(i) for i in match_list]
     
+    # The function to add a pipe character in front of the numbers in full chapters for easier splitting
+    def add_pipe(self, match: re.Match) -> str:
+
+        # Adds a pipe character to the front of the match and removes all the spaces
+        return f"|{match.group()}".replace(" ", "")
+
     # Makes the match list have 3 items
     # For easier manipulation when the match is placed into a range
     def standardise(self, match_list: List[str]) -> List[int]:
@@ -130,8 +132,8 @@ class MessageMatch:
     # Finds the title of the book
     def find_book_title(self, match_index: int) -> str:
         msg = self.msg
-        index = match_index - 1
-        bookindex = 0
+        index = match_index
+        book_index = 0
         
         # Iterating backwards from the previously matched start index
         while index > 0:
@@ -139,12 +141,12 @@ class MessageMatch:
 
             try:
 
-                # Finds a space and returns the bookindex
-                if msg[index].isspace():
+                # If the current index isn't one less than the match index, finds a space and returns the bookindex
+                if index != match_index - 1 and msg[index].isspace():
                     break
 
                 # Immediately invalidates if a symbol other than a bracket is found
-                if msg[index] in "!@#$%^&*_-+={}[],?<>":
+                elif msg[index] in "!@#$%^&*_-+={}[],?<>":
                     break
 
             # To handle an index error (no idea how it happens but it happens)
@@ -152,16 +154,16 @@ class MessageMatch:
                 break
 
         # In the case of no spaces before the words
-        bookindex = index
+        book_index = index
         
         # Gets the book number
-        booknum = self.find_book_num(bookindex)
+        book_num = self.find_book_num(book_index)
 
         # Assigns the book title to the book attribute
-        book = self.shorten_book(msg[index:match_index-1])
+        book = self.shorten_book(msg[index:match_index])
 
         # Makes the full book title
-        full_book_title = booknum + " " + book
+        full_book_title = f"{book_num} {book}"
 
         # Returns the book title
         return full_book_title.strip()
@@ -401,12 +403,6 @@ class MessageMatch:
         else:
             self.chapt_convert(book_code, match_index, match)
     
-    # The function to add a pipe character in front of the numbers in full chapters for easier splitting
-    def add_pipe(self, match: re.Match) -> str:
-
-        # Adds a pipe character to the front of the match
-        return f"|{match.group()[1:]}"
-
     # Function to iterate the chapter list and add it to the object list
     def append_chapters(self, match_index: int, book_code: str, chapter_list: List[str], bible_version: str) -> None:
 
@@ -453,7 +449,7 @@ class MessageMatch:
         match, bible_version = self.search_version(match)
 
         # Places a pipe character (|) in front of the numbers for easy splitting
-        piped_match = re.sub(r" \d\d?\d?[\d, -]*", self.add_pipe, match)
+        piped_match = regexes.num_portion_regex.sub(self.add_pipe, match)
 
         # Splits the match at the pipe character
         match_list = piped_match.split("|")
@@ -498,7 +494,7 @@ class MessageMatch:
         match, bible_version = self.search_version(match)
 
         # Places a pipe character (|) in front of the numbers for easy splitting
-        piped_match = re.sub(r" \d\d?\d?[\d, -]*", self.add_pipe, match)
+        piped_match = regexes.num_portion_regex.sub(self.add_pipe, match)
 
         # Gets the book number
         book_num = self.find_book_num(match_index)
