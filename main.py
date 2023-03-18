@@ -817,13 +817,13 @@ def check_full_chapt_chapter(message: str) -> bool:
         return False
 
 # Split a long message into different messages
-def split_message(message: types.Message, text: str, **kwargs) -> None:
+def split_message(message: types.Message, text: str, max_len: int = 4096, **kwargs) -> None:
 
     # List to append the parts of the long message
     splitted_list = []
 
     # Checks if the length of the message is within the Telegram Bot API limit
-    if len(text) <= 4096:
+    if len(text) <= max_len:
 
         # Sends the text directly without splitting if the message is within the limit
         splitted_list.append(text)
@@ -831,8 +831,8 @@ def split_message(message: types.Message, text: str, **kwargs) -> None:
     # Splits the long message into different parts
     else:
 
-        # Takes the first 4096 characters of the message
-        text_part = text[:4097]
+        # Gets the first part of the message with a length equal to the maximum length
+        text_part = text[:max_len]
 
         # First index of the text part, which is zero at the start
         first_index = 0
@@ -847,13 +847,13 @@ def split_message(message: types.Message, text: str, **kwargs) -> None:
             splitted_list.append(text[first_index:index])
             
             # Sets text_part to the next part of the message that is within the Telegram Bot API limit
-            text_part = text[index:index+4097]
+            text_part = text[index:index+max_len]
 
             # Sets the first index to the index previously gotten from the iterate_text() function
             first_index = index
 
             # Checks if the text part is within the Telegram Bot API limit
-            if len(text_part) <= 4096:
+            if len(text_part) <= max_len:
                 
                 # Adds the final part of the message to the list of the parts of the message and breaks the loop
                 splitted_list.append(text_part)
