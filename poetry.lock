@@ -17,7 +17,7 @@ trio = ["trio (>=0.16,<0.22)"]
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.11.2"
+version = "4.12.0"
 description = "Screen-scraping library"
 category = "main"
 optional = false
@@ -160,7 +160,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.81.0"
+version = "2.82.0"
 description = "Google API Client Library for Python"
 category = "main"
 optional = false
@@ -285,7 +285,7 @@ requests = ["requests (>=2.18.0,<3.0.0dev)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.58.0"
+version = "1.59.0"
 description = "Common protobufs used in Google APIs"
 category = "main"
 optional = false
@@ -349,7 +349,7 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "httplib2"
-version = "0.21.0"
+version = "0.22.0"
 description = "A comprehensive HTTP client library."
 category = "main"
 optional = false
@@ -389,7 +389,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "importlib-metadata"
-version = "6.0.0"
+version = "6.1.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -655,7 +655,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "980a2d1d26850b74cbbc8a41dc9cd321044952d62d65973732e404f07903cf7e"
+content-hash = "d9ac6e34e30b435e52bb4ea4c88fedccd95ede97be7d72bd27db51be54dbab69"
 
 [metadata.files]
 anyio = []
