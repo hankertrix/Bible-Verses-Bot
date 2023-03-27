@@ -508,8 +508,8 @@ def trusty_sleep(sleeptime: int) -> None:
 
 # Function to add a line break before a title
 def add_line_break(match_obj: re.Match) -> str:
-  text = match_obj.group()
-  return f"\n{text}"
+    text = match_obj.group()
+    return f"\n{text}"
 
 # Function to find the verse of the day
 def find_verse_of_the_day() -> Tuple[str]:
