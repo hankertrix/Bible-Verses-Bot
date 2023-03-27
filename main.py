@@ -459,8 +459,8 @@ def get_id(message_id: int) -> List[int]:
 @bot.message_handler(commands=["verseoftheday","votd"])
 def verse_start(message: types.Message) -> None:
 
-    # List containing the specific verse of the day and it's text
-    verse_list = find_verse_of_the_day()
+    # Gets the verse reference and the actual verse
+    verse_reference, verse = find_verse_of_the_day()
 
     # Gets the list of subscribers to the verse of the day message
     sub_list = db["subbed"]
@@ -472,7 +472,7 @@ def verse_start(message: types.Message) -> None:
     db["subbed"] = list(dict.fromkeys(sub_list))
     
     # Message to be sent to the user
-    sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_list[0]} NIV \n{verse_list[1]}"
+    sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_reference} NIV \n{verse}"
 
     # Sends the message        
     send_message(message.chat.id, sub_msg)
@@ -512,25 +512,46 @@ def add_line_break(match_obj: re.Match) -> str:
   return f"\n{text}"
 
 # Function to find the verse of the day
-def find_verse_of_the_day() -> List[str]:
+def find_verse_of_the_day() -> Tuple[str]:
+
+    # Gets the main page of BibleGateway
     main_page = s.get("https://www.biblegateway.com/")
+
+    # Adds line breaks before the headings in HTML
     text = re.sub("</h[1-6]>", add_line_break, main_page.text)
+
+    # Initialise the beautiful soup parser with lxml
     soup_search = BeautifulSoup(text, "lxml")
+
+    # Gets the verse name from the HTML
     verse_name = soup_search.find("span", {"class" : "citation"}).get_text()
+
+    # Removes all verses after a comma in the verse name
     verse_name = re.sub(r",\d\d?", "", verse_name)
+
+    # Gets the actual verse of the day from the HTML
     verse_of_the_day_raw = soup_search.find("div", {"id" : "verse-text"}).get_text()
+
+    # Adds a left to right mark in front of the verse to force all text to be displayed left to right (stops the Hebrew symbols from appearing at the end of the line instead of the start of the line in Psalms 119)
+    # Also removes all the spaces after a new line character
     verse_of_the_day = "\u200e" + re.sub("\n +", "\n", verse_of_the_day_raw.strip())
-    vlist = [verse_name.strip(), verse_of_the_day.strip()]
-    return vlist
+
+    # The tuple containing the verse name and the verse of the day
+    verse_tuple = (verse_name.strip(), verse_of_the_day.strip())
+
+    # Returns the tuple
+    return verse_tuple
 
 # Function to send the verse of the day
 def send_verse_of_the_day() -> None:
 
     # time.sleep(15)
 
-    # List containing the specific verse of the day and it's text
-    daily_verse_list = find_verse_of_the_day()
-    verse_msg = f"Today's verse is: \n\n{daily_verse_list[0]} NIV \n{daily_verse_list[1]}"
+    # Gets the verse reference and the actual verse
+    verse_reference, verse = find_verse_of_the_day()
+
+    # Create the verse message
+    verse_msg = f"Today's verse is: \n\n{verse_reference} NIV \n{verse}"
 
     # Iterates the list of chat ids that have subscribed to the verse of the day
     for chat_id in db["subbed"]:
