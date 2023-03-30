@@ -965,6 +965,7 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
                 # Checks if the error is one of those in the set
                 if e.description in {
                   "Bad Request: chat not found",
+                  "Bad Request: group chat was upgraded to a supergroup chat",
                   "Forbidden: bot was kicked from the supergroup chat",
                   "Forbidden: bot was kicked from the group chat",
                   "Forbidden: bot was blocked by the user",
