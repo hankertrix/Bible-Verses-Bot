@@ -882,22 +882,22 @@ def split_message(message: types.Message, text: str, max_len: int = 4096, **kwar
             # If the end index is greater or equal to the length of the text
             if end_index >= text_len:
 
-                # Appends the final part of the text to send
+                # Appends the final part of the text to send to the list of message parts
                 splitted_list.append(text[start_index:])
 
                 # Breaks the loop
                 break
 
     # Iterates the list of the parts of the message
-    for i in range(len(splitted_list)):
+    for index, part in enumerate(splitted_list):
         
         # Makes the first message a reply to the user's message
-        if i == 0:
-            reply_to(message, splitted_list[i], **kwargs)
+        if index == 0:
+            reply_to(message, part, **kwargs)
         
         # All other messages after the first is sent as a normal message
         else:
-            send_message(message.chat.id, splitted_list[i], **kwargs)
+            send_message(message.chat.id, part, **kwargs)
 
 # Iterates the parts of the long message backwards to find the newline character
 def iterate_text(first_index: int, text: str) -> None:
@@ -912,7 +912,7 @@ def iterate_text(first_index: int, text: str) -> None:
         # Checks if the message at the index is a newline character
         if text[i] == "\n":
 
-            # Returns the index of the long message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
+            # Returns the index of the entire message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
             return first_index + check_backticks(i, text)
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
@@ -933,10 +933,10 @@ def check_backticks(index: int, text: str) -> int:
             # Checks if the number of backticks is 201
             if count == 201:
 
-                # Returns the index that is 1 before the 201st backtick
+                # Returns the index of the 201st backtick
                 return backtick.start()
     
-    # Returns the index
+    # Returns the index + 1 as I want to include the newline character at the end of the message part (Telegram will automatically trim the message when it's sent so it's alright)
     return index + 1
 
 # Function to remove the specific message id from the database
