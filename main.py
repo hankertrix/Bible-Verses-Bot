@@ -843,8 +843,11 @@ def split_message(message: types.Message, text: str, max_len: int = 4096, **kwar
     # List to append the parts of the long message
     splitted_list = []
 
+    # Get the length of the text
+    text_len = len(text)
+
     # Checks if the length of the message is within the Telegram Bot API limit
-    if len(text) <= max_len:
+    if text_len <= max_len:
 
         # Sends the text directly without splitting if the message is within the limit
         splitted_list.append(text)
@@ -852,34 +855,39 @@ def split_message(message: types.Message, text: str, max_len: int = 4096, **kwar
     # Splits the long message into different parts
     else:
 
-        # Gets the first part of the message with a length equal to the maximum length
-        text_part = text[:max_len]
+        # The start index of the text part, which is zero at the start
+        start_index = 0
 
-        # First index of the text part, which is zero at the start
-        first_index = 0
+        # The end index of the text part, which is the sum of the start index and the maximum length
+        end_index = start_index + max_len
 
         # Starts a while loop without a condition
         while True:
 
-            # Get the last index that has the newline character using the iterate_text() function
-            index = iterate_text(first_index, text_part)
+            # Gets the part of the text that is within the Telegram Bot API limit
+            text_part = text[start_index:end_index]
 
-            # Appends the first part of the message
-            splitted_list.append(text[first_index:index])
+            # Get the index of the last newline character in the text part using the iterate_text() function
+            index = iterate_text(start_index, text_part)
+
+            # Appends the part of the message
+            splitted_list.append(text[start_index:index])
             
-            # Sets text_part to the next part of the message that is within the Telegram Bot API limit
-            text_part = text[index:index+max_len]
+            # Sets the start index to the index previously gotten from the iterate_text() function
+            start_index = index
 
-            # Sets the first index to the index previously gotten from the iterate_text() function
-            first_index = index
+            # Sets the end index to the sum of the start index and the maximum length
+            end_index = start_index + max_len
 
-            # Checks if the text part is within the Telegram Bot API limit
-            if len(text_part) <= max_len:
-                
-                # Adds the final part of the message to the list of the parts of the message and breaks the loop
-                splitted_list.append(text_part)
+            # If the end index is greater or equal to the length of the text
+            if end_index >= text_len:
+
+                # Appends the final part of the text to send
+                splitted_list.append(text[start_index:])
+
+                # Breaks the loop
                 break
-    
+
     # Iterates the list of the parts of the message
     for i in range(len(splitted_list)):
         
@@ -905,7 +913,7 @@ def iterate_text(first_index: int, text: str) -> None:
         if text[i] == "\n":
 
             # Returns the index of the long message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
-            return first_index + check_backticks(i, text) + 1
+            return first_index + check_backticks(i, text)
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
 def check_backticks(index: int, text: str) -> int:
@@ -925,11 +933,11 @@ def check_backticks(index: int, text: str) -> int:
             # Checks if the number of backticks is 201
             if count == 201:
 
-                # Sets the index to the 1 before the 201st backtick
-                index = backtick.start() - 2
+                # Returns the index that is 1 before the 201st backtick
+                return backtick.start()
     
     # Returns the index
-    return index
+    return index + 1
 
 # Function to remove the specific message id from the database
 def remove_from_db(message_id: int) -> None:
