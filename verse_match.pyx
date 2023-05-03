@@ -517,7 +517,7 @@ cdef class VerseMatch:
         try:
 
             # Tries searching in the first verse for the first number in the range or the second verse number
-            match_obj = re.search("`[⁰¹²³⁴⁵⁶⁷⁸⁹][⁰¹²³⁴⁵⁶⁷⁸⁹]?[⁰¹²³⁴⁵⁶⁷⁸⁹]?(?=⁻[⁰¹²³⁴⁵⁶⁷⁸⁹][⁰¹²³⁴⁵⁶⁷⁸⁹]?[⁰¹²³⁴⁵⁶⁷⁸⁹]?`\xa0)|`[⁰¹²³⁴⁵⁶⁷⁸⁹][⁰¹²³⁴⁵⁶⁷⁸⁹]?[⁰¹²³⁴⁵⁶⁷⁸⁹]?`\xa0", self.relevant_verses(verses))
+            match_obj = re.search("`[⁰¹²³⁴⁵⁶⁷⁸⁹]{1,3}(?=⁻[⁰¹²³⁴⁵⁶⁷⁸⁹]{1,3}`\xa0)|`[⁰¹²³⁴⁵⁶⁷⁸⁹]{1,3}`\xa0", self.relevant_verses(verses))
 
             # Checks if the match has a chapter number before it
             if self.chapt_num_found():
@@ -540,7 +540,7 @@ cdef class VerseMatch:
                 verse_after_objs = soup.find_all("span", {"class" : f"{book_code}-{self.match[1]+1}"})
 
                 # Gets the number from the verse after
-                correct_verse_num = int(re.search(r"\d\d?\d?\xa0", verse_after_objs[0].get_text()).group())
+                correct_verse_num = int(re.search(r"\d{1,3}\xa0", verse_after_objs[0].get_text()).group())
                 
             # If that fails as well
             except:
@@ -664,43 +664,43 @@ cdef class VerseMatch:
         greek_esth_additions = [1,3,8,10]
 
         # Checks if the bible version requested is NRSVACE and the chapter requested is in the list of chapters in Esther with additions
-        if [self.version, self.book] == ["NRSVACE", "Esth"] and self.match[0] in esth_additions:
+        if (self.version, self.book) == ("NRSVACE", "Esth") and self.match[0] in esth_additions:
 
             # Returns true
             return True
 
         # Checks if the bible version requested is NRSVCE and the chapter requested is in the list of chapters in Esther with additions, except for chapter 4
-        elif [self.version, self.book] == ["NRSVCE", "Esth"] and self.match[0] in esth_additions[:-1] + [5]:
+        elif (self.version, self.book) == ("NRSVCE", "Esth") and self.match[0] in esth_additions[:-1] + [5]:
 
             # Returns true
             return True
 
         # Checks if the bible version requested is RSVCE and the chapter requested is Esther 1,3,4,5,8 or 10
-        elif [self.version, self.book] == ["RSVCE", "Esth"] and self.match[0] in esth_additions + [5]:
+        elif (self.version, self.book) == ("RSVCE", "Esth") and self.match[0] in esth_additions + [5]:
 
             # Returns true
             return True
 
         # Checks if the bible version requested is NRSVUE and the chapter requested is in the list of chapters in Greek Esther with additions, adding chapter 5
-        elif [self.version, self.book] == ["NRSVUE", "GkEsth"] and self.match[0] in greek_esth_additions + [5]:
+        elif (self.version, self.book) == ("NRSVUE", "GkEsth") and self.match[0] in greek_esth_additions + [5]:
 
             # Returns true
             return True
         
         # Checks if the bible version requested is NRSVA and the chapter requested is in the list of chapters in Greek Esther with additions, adding chapter 4
-        elif [self.version, self.book] == ["NRSVA", "GkEsth"] and self.match[0] in greek_esth_additions + [4]:
+        elif (self.version, self.book) == ("NRSVA", "GkEsth") and self.match[0] in greek_esth_additions + [4]:
 
             # Returns true
             return True
         
         # Checks if the bible version requested is RSV and the chapter requested is Greek Esther 3,4,5,8 and 10
-        elif [self.version, self.book] == ["RSV", "GkEsth"] and self.match[0] in {3,4,5,8,10}:
+        elif (self.version, self.book) == ("RSV", "GkEsth") and self.match[0] in {3,4,5,8,10}:
 
             # Returns true
             return True
 
         # Checks if the bible version requested is CEB and the chapter requested is Greek Esther 1,3,4,8 or 10
-        elif [self.version, self.book] == ["CEB", "GkEsth"] and self.match[0] in greek_esth_additions + [4]:
+        elif (self.version, self.book) == ("CEB", "GkEsth") and self.match[0] in greek_esth_additions + [4]:
 
             # Returns true
             return True
@@ -718,13 +718,13 @@ cdef class VerseMatch:
     cdef bint check_esth_5(self):
 
         # Checks if the version is NRSVCE or NRSVACE and if the chapter requested is Esther 5
-        if self.version in {"NRSVACE"} and [self.book, self.match[0], self.match[2]] == ["Esth", 5, 177]:
+        if self.version in {"NRSVACE"} and (self.book, self.match[0], self.match[2]) == ("Esth", 5, 177):
 
             # Returns true
             return True
         
-        # Checks if the version is NRSVUE or NRSVA or CEB and if the chapter requested is Esther 5
-        elif self.version in {"CEB", "NRSVA"} and [self.book, self.match[0], self.match[2]] == ["GkEsth", 5, 177]:
+        # Checks if the version is NRSVUE or NRSVA or CEB and if the chapter requested is Greek Esther 5
+        elif self.version in {"CEB", "NRSVA"} and (self.book, self.match[0], self.match[2]) == ("GkEsth", 5, 177):
 
             # Returns true
             return True
@@ -749,10 +749,10 @@ cdef class VerseMatch:
         self.res = re.sub("`", "\u02cb", self.res)
 
         # Removes all spaces between tables
-        self.res = re.sub("</tr> <tr>", "</tr><tr>", self.res)
+        self.res = re.sub("</tr> +<tr>", "</tr><tr>", self.res)
 
         # Checks if the bible chapter requested is 1 Timothy 3 NCB
-        if [self.version, self.book, self.match[0]] == ["NCB", "1Tim", 3]:
+        if (self.version, self.book, self.match[0]) == ("NCB", "1Tim", 3):
 
             # Adds the p tag to the front of the first verse
             self.res = re.sub('<b class="inline-h3">Qualifications of Bishops.</b>', '<p><b class="inline-h3">Qualifications of Bishops.</b>', self.res)
@@ -878,7 +878,7 @@ cdef class VerseMatch:
         if self.have_additions():
             
             # Remove the additional verse numbers
-            verses = re.sub(r"`[¹²³⁴⁵⁶⁷⁸⁹⁰]`\xa0 *(?=`[¹²³⁴⁵⁶⁷⁸⁹][¹²³⁴⁵⁶⁷⁸⁹⁰]?[¹²³⁴⁵⁶⁷⁸⁹⁰]?`\xa0)", "", verses)
+            verses = re.sub(r"`[¹²³⁴⁵⁶⁷⁸⁹⁰]`\xa0 *(?=`[¹²³⁴⁵⁶⁷⁸⁹]{1,3}`\xa0)", "", verses)
         
 
         ## Replaces the number on the first verse as 1 instead of the book number ##
@@ -939,7 +939,7 @@ cdef class VerseMatch:
             correct_verse_num = self.ERV_change_verse_num(correct_verse_num)
         
         # Replace the verse number in the first verse given
-        verses = re.sub("(?<!-)\d\d?\d?\xa0", f'{correct_verse_num}\xa0', verses, 1)
+        verses = re.sub("(?<!-)\d{1,3}\xa0", f"{correct_verse_num}\xa0", verses, 1)
 
         ## ---------------------------------------------------------------------- ##
 
@@ -947,27 +947,24 @@ cdef class VerseMatch:
         # Gets rid of - at the back of the verses
         verses = verses.strip("—")
 
-        # Removes other random characters with spaces
-        verses = re.sub("[¶] ", "", verses)
-
-        # Removes other random characters without spaces
-        verses = re.sub("[*]","", verses)
+        # Removes other random characters
+        verses = re.sub("[¶*] *", "", verses)
 
         # Fixes all the hebrew characters being right to left
         verses = re.sub("[אבגדהוזחטיכלמנסעפצקרשתשׂשׁשׂשׁ]", self.fix_hebrew, verses)
 
         # Removes the book number for bible versions that have multiple verses like The Message version and also the Geneva bible and converts the chapter number to a verse number
-        verses = re.sub(r"\d\d?\d?\xa0 *`?", self.edit_chapter_num, verses)
+        verses = re.sub(r"\d{1,3}\xa0 *`?", self.edit_chapter_num, verses)
         
         # Adds the correct verse number in brackets for bible versions like CJB that don't give the correct verse number of the starting verse but instead give only the bracketed verse number like in 2 Chronicles 2:1 CJB
         # Only adds the verse number if the bracketed verse is not 0
-        verses = re.sub(r"(?<![¹²³⁴⁵⁶⁷⁸⁹⁰]`\xa0)`⁽[¹²³⁴⁵⁶⁷⁸⁹][¹²³⁴⁵⁶⁷⁸⁹⁰]?[¹²³⁴⁵⁶⁷⁸⁹⁰]?⁾`\xa0", self.add_verse_num, verses)
+        verses = re.sub(r"(?<![¹²³⁴⁵⁶⁷⁸⁹⁰]`\xa0)`⁽[¹²³⁴⁵⁶⁷⁸⁹]{1,3}⁾`\xa0", self.add_verse_num, verses)
 
         # Adds the correct verse number in front of the bracketed verse reference for bible versions like CJB when the correct verse number is not given like in Nehemiah 10:1 CJB
-        verses = re.sub(r"(?<![¹²³⁴⁵⁶⁷⁸⁹⁰]`\xa0)`⁽[¹²³⁴⁵⁶⁷⁸⁹][¹²³⁴⁵⁶⁷⁸⁹⁰]?[¹²³⁴⁵⁶⁷⁸⁹⁰]?`\ufeff᠄ `[¹²³⁴⁵⁶⁷⁸⁹⁰]?[¹²³⁴⁵⁶⁷⁸⁹⁰]?[¹²³⁴⁵⁶⁷⁸⁹⁰]?⁾`\xa0", self.add_verse_num, verses)
+        verses = re.sub(r"(?<![¹²³⁴⁵⁶⁷⁸⁹⁰]`\xa0)`⁽[¹²³⁴⁵⁶⁷⁸⁹]{1,3}`\ufeff᠄ `[¹²³⁴⁵⁶⁷⁸⁹⁰]{0,3}⁾`\xa0", self.add_verse_num, verses)
 
         # Remove multiple spaces if it comes after a verse number
-        verses = re.sub(r"`\xa0\xa0+|`\xa0 +","`\xa0", verses)
+        verses = re.sub(r"`\xa0{2,}|`\xa0 +","`\xa0", verses)
 
         # Remove line breaks if it comes after a verse number
         verses = re.sub(r"`\xa0\n+", "`\xa0", verses)
@@ -976,7 +973,7 @@ cdef class VerseMatch:
         verses = re.sub(r"--", "\u2010\u2010", verses)
 
         # Checks if the chapter given is Matthew 1 WE
-        if [self.version, self.book, self.match[0]] == ["WE", "Matt", 1]:
+        if (self.version, self.book, self.match[0]) == ("WE", "Matt", 1):
 
             # Adds the letter J before the verse 2-16
             verses = re.sub("esus' family line:", "Jesus' family line:", verses)
@@ -988,13 +985,13 @@ cdef class VerseMatch:
             verses = verses[verses.find("Addition C"):]
 
         # Checks whether the chapter requested is Esther 5:1-2 NRSVCE or Esther 5:1-2 NRSVACE or Greek Esther 5:1-2 NRSVA or NRSVUE or Greek Esther 4 NRSVA
-        if self.check_esth() or self.check_greek_esth() or [self.version, self.book, self.match[0]] == ["NRSVA", "GkEsth", 4]:
+        if self.check_esth() or self.check_greek_esth() or (self.version, self.book, self.match[0]) == ("NRSVA", "GkEsth", 4):
 
             # Removes everything after "End of Addition D"
             verses = re.sub("End of Addition D.*", "End of Addition D", verses, flags=re.DOTALL)
 
         # Checks if the chapter given is Esther 5 NRSVACE
-        if [self.version, self.book, self.match[0]] == ["NRSVACE", "Esth", 5]:
+        if (self.version, self.book, self.match[0]) == ("NRSVACE", "Esth", 5):
 
             # Removes the "End of Addition D"
             verses = re.sub("End of Addition D\n\n", "", verses)
@@ -1006,7 +1003,7 @@ cdef class VerseMatch:
             verses = verses[verses.find("Addition C"):] + "\n\nEnd of Addition D"
 
         # Replace 3 or more line break characters with 2 line break characters
-        verses = re.sub("\n\n\n+", "\n\n", verses)
+        verses = re.sub("\n{3,}", "\n\n", verses)
 
         print(self.final)
 
