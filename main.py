@@ -1114,7 +1114,7 @@ def debug(message: types.Message) -> None:
     if message.chat.id != int(os.environ["DEV_ID"]):
         return
 
-    msg = f'db["subbed"] = {db["subbed"]}\n\ndb["chats_version"] = {db["chats_version"]}\n\ndb["previous_sent_time"] = {repr(db["previous_sent_time"])}\n\n{TimeCheck.instances[0].__dict__}'
+    msg = f'db["subbed"] = {db["subbed"]}\n\ndb["chats_version"] = {db["chats_version"]}\n\ndb["previous_sent_time"] = {repr(db["previous_sent_time"])}'
     split_message(message, msg)
 
 # Name safeguard
