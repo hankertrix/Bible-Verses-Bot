@@ -18,6 +18,17 @@ from message_match import MessageMatch
 from verse_match import VerseMatch
 from next_step_handler import NextStepHandler
 
+# The set of errors to stop sending the message when encountered
+ERRORS_TO_BREAK_ON = {
+    "Bad Request: chat not found",
+    "Bad Request: replied message not found",
+    "Bad Request: group chat was upgraded to a supergroup chat",
+    "Forbidden: bot was kicked from the supergroup chat",
+    "Forbidden: bot was kicked from the group chat",
+    "Forbidden: bot was blocked by the user",
+    "Forbidden: user is deactivated"
+}
+
 # Sets the timezone to Singapore's timezone
 # The default timezone on Replit is UTC+0
 os.environ["TZ"] = "Asia/Singapore"
@@ -971,14 +982,7 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
             if isinstance(e, ApiTelegramException):
 
                 # Checks if the error is one of those in the set
-                if e.description in {
-                  "Bad Request: chat not found",
-                  "Bad Request: group chat was upgraded to a supergroup chat",
-                  "Forbidden: bot was kicked from the supergroup chat",
-                  "Forbidden: bot was kicked from the group chat",
-                  "Forbidden: bot was blocked by the user",
-                  "Forbidden: user is deactivated"
-                }:
+                if e.description in ERRORS_TO_BREAK_ON:
 
                     # Remove the user from the database
                     remove_from_db(message_id)
@@ -1014,8 +1018,8 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
         except Exception as e:
             logging.error(e)
 
-            # If the error is that the replied message isn't found then exit the function
-            if e.description in {"Bad Request: replied message not found"}:
+            # If the error is one of those in the set
+            if e.description in ERRORS_TO_BREAK_ON:
                 return
 
 # Function to start the time checking thread
