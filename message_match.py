@@ -440,7 +440,7 @@ class MessageMatch:
     def remove_empty(self, chapter_list: List[str]) -> List[str]:
         
         # Returns the chapter list without any empty characters
-        return [char for char in chapter_list if len(char) != 0 or not char.isspace()]
+        return [char for char in chapter_list if len(char.strip()) != 0]
 
     # The converter to convert the chapter match with the word chapter in it to a list to pass to the VerseMatch class
     def full_chapt_converter(self, match_index: int, match: str) -> None:
