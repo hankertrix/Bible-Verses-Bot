@@ -5,7 +5,8 @@
 # Pyrogram's pdf documentation: https://buildmedia.readthedocs.org/media/pdf/pyrogram/stable/pyrogram.pdf
 # Conversations in pyrogram: https://nippycodes.com/coding/conversations-in-pyrogram-no-extra-package-needed/
 
-import re, os, datetime, time, threading, logging, keep_alive, asyncio, regexes
+import re, os, datetime, time, threading, logging, asyncio, traceback
+import keep_alive, regexes
 import httpx
 from request_sess import s
 from telebot import TeleBot, types
@@ -603,8 +604,8 @@ async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
                 break;
 
             # Catch any error and logs them
-            except Exception as e:
-                logging.error(e)
+            except Exception:
+                traceback.print_exc()
     
     # Returns the list of htmls returned by the httpx module
     return [req.text for req in reqs]
@@ -976,7 +977,7 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
         except Exception as e:
             
             # Logs the error
-            logging.error(e)
+            traceback.print_exc()
             
             # Checks if the error is a Telegram API exception
             if isinstance(e, ApiTelegramException):
@@ -1016,7 +1017,7 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
         
         # Logs the error if the message isn't sent successfully
         except Exception as e:
-            logging.error(e)
+            traceback.print_exc()
 
             # If the error is one of those in the set
             if e.description in ERRORS_TO_BREAK_ON:
@@ -1061,10 +1062,10 @@ def send_update() -> None:
                         break
         
                 # Catch the exception
-                except Exception as e:
+                except Exception:
         
                     # Logs the error
-                    logging.error(e)
+                    traceback.print_exc()
         
         # Pauses the function for 5 minutes
         time.sleep(300)
@@ -1087,8 +1088,8 @@ def keep_bot_alive() -> None:
                 break
 
             # Catch and log any exceptions
-            except Exception as e:
-                logging.error(e)
+            except Exception:
+                traceback.print_exc()
 
         # Pauses the function for 5 minutes before trying again
         time.sleep(300)
@@ -1139,10 +1140,10 @@ if __name__ == "__main__":
             bot.infinity_polling()
 
         # Handles a ConnectionResetError or a RequestTimedOutError
-        except Exception as e:
+        except Exception:
             
             # Logs the error after handling the lost message
-            logging.error(e)
+            traceback.print_exc()
 
 
 
