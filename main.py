@@ -27,7 +27,8 @@ ERRORS_TO_BREAK_ON = {
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was kicked from the group chat",
     "Forbidden: bot was blocked by the user",
-    "Forbidden: user is deactivated"
+    "Forbidden: user is deactivated",
+    "Forbidden: bot was kicked from the channel chat"
 }
 
 # Sets the timezone to Singapore's timezone
