@@ -2,10 +2,15 @@
 # Replit files
 .replit
 *.nix
+.config
+.upm/
 
 # Python cache files
 __pycache__/
 .cache/
+
+# Python virtual environment
+venv/
 
 # Compiled C extensions
 *.so
