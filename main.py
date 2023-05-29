@@ -1066,7 +1066,7 @@ def send_update() -> None:
                 except Exception:
         
                     # Logs the error
-                    traceback.print_exc()
+                    tra
         
         # Pauses the function for 5 minutes
         time.sleep(300)
