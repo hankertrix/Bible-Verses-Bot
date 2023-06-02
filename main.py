@@ -977,9 +977,6 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
         # Catch block
         except Exception as e:
             
-            # Logs the error
-            traceback.print_exc()
-            
             # Checks if the error is a Telegram API exception
             if isinstance(e, ApiTelegramException):
 
@@ -1063,10 +1060,10 @@ def send_update() -> None:
                         break
         
                 # Catch the exception
-                except Exception:
+                except Exception as e:
         
                     # Logs the error
-                    tra
+                    logging.error(e)
         
         # Pauses the function for 5 minutes
         time.sleep(300)
@@ -1089,8 +1086,8 @@ def keep_bot_alive() -> None:
                 break
 
             # Catch and log any exceptions
-            except Exception:
-                traceback.print_exc()
+            except Exception as e:
+                logging.error(e)
 
         # Pauses the function for 5 minutes before trying again
         time.sleep(300)
@@ -1143,7 +1140,7 @@ if __name__ == "__main__":
         # Handles a ConnectionResetError or a RequestTimedOutError
         except Exception:
             
-            # Logs the error after handling the lost message
+            # Logs the error
             traceback.print_exc()
 
 
