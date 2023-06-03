@@ -16,7 +16,7 @@ firebase-admin = "^6.1.0"
 Cython = "^0.29.35"
 waitress = "^2.1.2"
 
-[tool.poetry.dev.dependencies]
+[tool.poetry.dev-dependencies]
 urllib3 = "1.26.16"
 
 [build-system]
