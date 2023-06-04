@@ -1018,6 +1018,14 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
 
             # If the error is one of those in the set
             if e.description in ERRORS_TO_BREAK_ON:
+                
+                # Remove the user from the database
+                remove_from_db(message.chat.id)
+    
+                # Logs the user deleted
+                logging.debug(message.chat.id)
+                
+                # Exits the function
                 return
 
             # Otherwise, logs the error
