@@ -1015,11 +1015,14 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
         
         # Logs the error if the message isn't sent successfully
         except Exception as e:
-            traceback.print_exc()
 
             # If the error is one of those in the set
             if e.description in ERRORS_TO_BREAK_ON:
                 return
+
+            # Otherwise, logs the error
+            else:
+                logging.error(e)
 
 # Function to start the time checking thread
 def check_time() -> None:
