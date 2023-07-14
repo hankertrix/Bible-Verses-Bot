@@ -40,6 +40,9 @@ time.tzset()
 logging.basicConfig(format='%(levelname)s: %(asctime)s - %(message)s', level=logging.DEBUG)
 #logging.disable("CRITICAL")
 
+# Disable the logging for httpcore
+logging.getLogger("httpcore").setLevel(logging.CRITICAL)
+
 # Starts the server
 keep_alive.keep_alive()
 
