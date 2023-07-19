@@ -24,11 +24,13 @@ ERRORS_TO_BREAK_ON = {
     "Bad Request: chat not found",
     "Bad Request: replied message not found",
     "Bad Request: group chat was upgraded to a supergroup chat",
+    "Bad Request: TOPIC_CLOSED",
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was kicked from the group chat",
     "Forbidden: bot was blocked by the user",
     "Forbidden: user is deactivated",
-    "Forbidden: bot was kicked from the channel chat"
+    "Forbidden: bot was kicked from the channel chat",
+    "Forbidden: bot is not a member of the channel chat",
 }
 
 # Sets the timezone to Singapore's timezone
