@@ -306,7 +306,7 @@ Use the /setversion command to change the default bible version.
 You can also use the /listversions command to see the list of bible versions you can change to.
     
 The bot can also send you the verse of the day by using the /verseoftheday or the /votd command.
-The verse of the day would be sent at 12:00pm daily. The verse of the day sent will be in the bible version that you have set for the chat. If the bible version you have set for your chat doesn't have the verse of the day, the bot will send the NIV version instead.
+The verse of the day would be sent at 12:00pm daily and it will be in the bible version that you have set for the chat. If the bible version you have set for your chat doesn't have the verse of the day, the bot will send the NIV version instead.
 
 You can unsubscribe from the verse of the day using the /stopverseoftheday or the /svotd command.
 
