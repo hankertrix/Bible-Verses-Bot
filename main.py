@@ -94,7 +94,7 @@ class TimeCheck(threading.Thread):
             if (current_time.hour, current_time.minute) == (verse_of_the_day_time[0], verse_of_the_day_time[1]) and current_time.day != datetime.datetime.fromisoformat(db["previous_sent_time"]).day:
 
                 # Calls the function to send the verse of the day message
-                send_verse_of_the_day()
+                asyncio.run(send_verse_of_the_day())
 
                 # Set the previous sent time to the current time
                 db["previous_sent_time"] = datetime.datetime.now().isoformat()
@@ -112,7 +112,7 @@ class TimeCheck(threading.Thread):
                     time.sleep(10)
 
                     # Sends the verse of the day
-                    send_verse_of_the_day()
+                    asyncio.run(send_verse_of_the_day())
   
                     # Set the previous sent time to the current time
                     db["previous_sent_time"] = datetime.datetime.now().isoformat()
@@ -153,6 +153,7 @@ class TimeCheck(threading.Thread):
 
                     # Pauses the program for one second so that it doesn't miss the timing to send the verse of the day
                     time.sleep(1)
+
 
 # The function to debounce the inline query
 def debounce_inline_query(duration: float) -> Callable:
@@ -211,6 +212,7 @@ def inline_handler(inline_query: types.InlineQuery) -> None:
     # Calls the answer function using a thread
     threading.Thread(target=inline_answer, args=(inline_query, )).start()
 
+
 # Function to respond to the inline query
 def inline_answer(inline_query: types.InlineQuery) -> None:
 
@@ -248,6 +250,7 @@ def inline_answer(inline_query: types.InlineQuery) -> None:
                 ]
             )
 
+
 # Handles the /start command
 @bot.channel_post_handler(commands=["start"])
 @bot.message_handler(commands=["start"])
@@ -262,6 +265,7 @@ To see more information about the bot, use the /help command.
 Hopefully this bot will help you in your journey with God!'''
     
     send_message(message.chat.id, start_msg)
+
 
 # Handles the /help command
 @bot.channel_post_handler(commands=["help"])
@@ -302,7 +306,7 @@ Use the /setversion command to change the default bible version.
 You can also use the /listversions command to see the list of bible versions you can change to.
     
 The bot can also send you the verse of the day by using the /verseoftheday or the /votd command.
-The verse of the day would be sent at 12:00pm daily.
+The verse of the day would be sent at 12:00pm daily. The verse of the day sent will be in the bible version that you have set for the chat. If the bible version you have set for your chat doesn't have the verse of the day, the bot will send the NIV version instead.
 
 You can unsubscribe from the verse of the day using the /stopverseoftheday or the /svotd command.
 
@@ -312,45 +316,11 @@ Hopefully you'll find this bot useful!'''
     
     send_message(message.chat.id, help_msg)
 
-# Function to obtain the bible version of the chat from the chat id
-def obtain_version(chat_id: int) -> str:
-    
-    # Initialises the saved version variable
-    saved_version = ""
-
-    # Tries to retrieve a string with the chat id and the saved bible version from the database
-    for i in db["chats_version"]:
-
-        # If the string exists
-        if i.startswith(str(chat_id)):
-            
-            # Assign the variable saved version to it and breaks the loop
-            saved_version = i
-            break
-    
-    # Returns the string
-    return saved_version
 
 # A function to get the version from the database and returns NIV if there is no default version found
 def get_version(message: types.Message) -> str:
-    
-    # Gets the saved version string using the obtain version function
-    saved_version = obtain_version(message.chat.id)
+    return db["chats_version"].get(str(message.chat.id), "NIV")
 
-    # Check if there isn't a saved version
-    if saved_version == "":
-        
-        # If there isn't, set the bible version to NIV (default)
-        version = "NIV"
-    
-    # If there is a saved version
-    else:
-
-        # Gets the saved bible version from the database
-        version = saved_version.split()[1]
-    
-    # Returns the bible version
-    return version
 
 # Handles the /version command
 @bot.channel_post_handler(commands=["version"])
@@ -365,6 +335,7 @@ def display_version(message: types.Message) -> None:
 
     # Sends the message
     send_message(message.chat.id, version_message)
+
 
 # Handles the /setversion command
 @bot.channel_post_handler(commands=["setversion"])
@@ -389,6 +360,7 @@ def handle_version(message: types.Message) -> None:
         # Calls the set_version function
         set_version(message, msg_ctx)
 
+
 # The function to read the user's message and save the new bible version given if it's accepted
 @bot.channel_post_handler(func=lambda message: handler.check_step("setversion", message, 1))
 @bot.message_handler(func=lambda message: handler.check_step("setversion", message, 1))
@@ -409,23 +381,24 @@ def set_version(message: types.Message, ctx: str = "") -> None:
     # Gets the version from the version mapping
     version_given = version_map.get(version_given, version_given)
 
-    # Gets the version list from the database
-    version_list = db["chats_version"]
+    # Gets the version dictionary from the database
+    version_dict = db["chats_version"]
       
     # Checks if the bible version given is an accepted one
     if version_given in bible_version_set:
-        
-        # The list containing the chat id and the saved bible version
-        saved_version = obtain_version(message.chat.id)
 
+        # Gets the message ID as a string
+        message_id = str(message.chat.id)
+        
         # Removes the saved version if found
-        version_list = [version for version in version_list if version != saved_version]
+        if message_id in version_dict:
+            del version_dict[message_id]
 
         # Checks if the version is not NIV
         if version_given != "NIV":
 
             # Saves the new version given to the database only when it's not NIV to save space
-            version_list.append(f"{message.chat.id} {version_given}")
+            version_dict[message_id] = version_given
 
         # The message to notifiy the chat that the version has changed
         version_changed_msg = f"The current bible version has changed to {version_given}."
@@ -443,10 +416,11 @@ def set_version(message: types.Message, ctx: str = "") -> None:
         reply_to(message, invalid_msg)
 
     # Finally, set the version list in the database to the updated one
-    db["chats_version"] = list(dict.fromkeys(version_list))
+    db["chats_version"] = version_dict
 
     # Removes the next step handler
     handler.clear_step_handler("setversion", message)
+
 
 # Handles the /listversions command
 @bot.channel_post_handler(commands=["listversions", "listversion"])
@@ -468,17 +442,22 @@ def list_bible_versions(message: types.Message) -> None:
     # Sends the message
     send_message(message.chat.id, list_version_msg)
 
+
 # Gets the specific message id from the database
 def get_id(message_id: int) -> List[int]:
     return [chat_id for chat_id in db["subbed"] if chat_id == message_id]
+
 
 # Handles the /verseoftheday command
 @bot.channel_post_handler(commands=["verseoftheday","votd"])
 @bot.message_handler(commands=["verseoftheday","votd"])
 def verse_start(message: types.Message) -> None:
 
-    # Gets the verse reference and the actual verse
-    verse_reference, verse = find_verse_of_the_day()
+    # Gets the saved version
+    saved_version = db["chats_version"].get(str(message.chat.id), "NIV")
+
+    # Gets the verse message
+    verse_msg = asyncio.run(get_verse_of_the_day(saved_version))
 
     # Gets the list of subscribers to the verse of the day message
     sub_list = db["subbed"]
@@ -490,10 +469,11 @@ def verse_start(message: types.Message) -> None:
     db["subbed"] = list(dict.fromkeys(sub_list))
     
     # Message to be sent to the user
-    sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_reference} NIV \n{verse}"
+    sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_msg}"
 
     # Sends the message        
     send_message(message.chat.id, sub_msg)
+
 
 # Handles the /stopverseoftheday command
 @bot.channel_post_handler(commands=["stopverseoftheday","svotd"])
@@ -518,61 +498,132 @@ def verse_stop(message: types.Message) -> None:
         not_subbed_msg = "You haven't subscribed to receive the verse of the day. Please subscribe first using the /verseoftheday or the /votd command."
         send_message(message.chat.id, not_subbed_msg)
 
+
 # More reliable time.sleep() because I'm pausing the verse of the day thread execution for a long time
 def trusty_sleep(sleeptime: int) -> None:
     start = time.time()
     while (time.time() - start < sleeptime):
         time.sleep(sleeptime - (time.time()-start))
 
+
 # Function to add a line break before a title
 def add_line_break(match_obj: re.Match) -> str:
     text = match_obj.group()
     return f"\n{text}"
 
-# Function to find the verse of the day
-def find_verse_of_the_day() -> Tuple[str]:
+# Function to get the verse of the day
+async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
-    # Gets the main page of BibleGateway
-    main_page = s.get("https://www.biblegateway.com/")
+    # Initialise the verse message
+    verse_msg = ""
 
-    # Adds line breaks before the headings in HTML
-    text = re.sub("</h[1-6]>", add_line_break, main_page.text)
+    # While the verse message is nothing
+    while verse_msg == "":
 
-    # Initialise the beautiful soup parser with lxml
-    soup_search = BeautifulSoup(text, "lxml")
+        # Using the httpx async client
+        async with httpx.AsyncClient() as session:
+    
+            # Gets the verse of the day page from bible gateway
+            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
+    
+        # Adds line breaks before the headings in HTML
+        text = re.sub("</h[1-6]>", add_line_break, verse_of_the_day_page.text)
+    
+        # Initialise the beautiful soup parser with lxml
+        soup = BeautifulSoup(text, "lxml")
+    
+        # Delete the footnotes and the cross references from the HTML
+        for unwanted_tag in soup.select(".passage-other-trans, .footnote, .footnotes, .crossreference, .crossrefs"):
+            unwanted_tag.decompose()
+    
+        # Selects all of the verses
+        verses_soup = soup.select(".rp-passage")
+    
+        # The list to store the verse message
+        verse_msg_list = []
+    
+        # Iterate over all of the verses
+        for verse_soup in verses_soup:
+    
+            # Gets the verse name from the HTML
+            verse_name = verse_soup.find("div", class_="rp-passage-display").get_text().strip()
+    
+            # Gets the text of the verse from the HTML
+            verse_text = verse_soup.find("div", class_="rp-passage-text").get_text()
+          
+            # Adds a left to right mark in front of the verse to force all text to be displayed left to right (stops the Hebrew symbols from appearing at the end of the line instead of the start of the line in Psalms 119)
+            # Also removes all the spaces after a new line character
+            verse_text = "\u200e" + re.sub("\n +", "\n", verse_text.strip())
+    
+            # Creates the verse and adds it to the list
+            verse_msg_list.append(f"{verse_name} {version}\n{verse_text}")
+    
+        # The verse message containing the verse name and the verse of the day
+        verse_msg = "\n\n".join(verse_msg_list).strip()
 
-    # Gets the verse name from the HTML
-    verse_name = soup_search.find("span", {"class" : "citation"}).get_text()
+        # If the verse message is nothing, change the version to NIV
+        if verse_msg == "":
+            version = "NIV"
 
-    # Removes all verses after a comma in the verse name
-    verse_name = re.sub(r",\d\d?", "", verse_name)
+    # Returns the verse message
+    return verse_msg
 
-    # Gets the actual verse of the day from the HTML
-    verse_of_the_day_raw = soup_search.find("div", {"id" : "verse-text"}).get_text()
-
-    # Adds a left to right mark in front of the verse to force all text to be displayed left to right (stops the Hebrew symbols from appearing at the end of the line instead of the start of the line in Psalms 119)
-    # Also removes all the spaces after a new line character
-    verse_of_the_day = "\u200e" + re.sub("\n +", "\n", verse_of_the_day_raw.strip())
-
-    # The tuple containing the verse name and the verse of the day
-    verse_tuple = (verse_name.strip(), verse_of_the_day.strip())
-
-    # Returns the tuple
-    return verse_tuple
 
 # Function to send the verse of the day
-def send_verse_of_the_day() -> None:
+async def send_verse_of_the_day() -> None:
 
-    # time.sleep(15)
+    # asyncio.sleep(15)
 
-    # Gets the verse reference and the actual verse
-    verse_reference, verse = find_verse_of_the_day()
+    # Gets the list of people who have subscribed to the verse of the day
+    subbed_list = db["subbed"]
 
-    # Create the verse message
-    verse_msg = f"Today's verse is: \n\n{verse_reference} NIV \n{verse}"
+    # Gets the stored version for each chat
+    chats_version = db["chats_version"]
+
+    # An empty dictionary to add the version and their respective messages to
+    # It will always contain NIV
+    verse_of_the_day_msg_dict = {
+      "NIV": ""
+    }
+
+    # Iterates over the list of chat IDs that have subscribed to the verse of the day
+    for chat_id in subbed_list:
+
+        # Gets the saved version for the chat ID
+        saved_version = chats_version.get(str(chat_id))
+
+        # Checks if the chat has saved a version
+        if saved_version is not None:
+
+            # Adds the version to the dictionary
+            verse_of_the_day_msg_dict[saved_version] = ""
+
+    # The list of tasks
+    tasks = []
+
+    # Iterates over all of the versions in the dictionary
+    for version in verse_of_the_day_msg_dict:
+
+        # Adds the task to get the verse of the day to the list of tasks
+        tasks.append(get_verse_of_the_day(version))
+
+    # Gathers all of the verses of the day
+    verses_of_the_day = await asyncio.gather(*tasks)
+
+    # Iterates over the versions in the dictionary
+    for index, version in enumerate(verse_of_the_day_msg_dict.keys()):
+
+        # Sets the version in the dictionary to the verse of the day message
+        verse_of_the_day_msg_dict[version] = f"Today's verse is: \n\n{verses_of_the_day[index]}"
 
     # Iterates the list of chat ids that have subscribed to the verse of the day
-    for chat_id in db["subbed"]:
+    for chat_id in subbed_list:
+      
+        # Gets the saved version for the chat ID
+        saved_version = chats_version.get(str(chat_id))
+
+        # The verse message to send to the person
+        verse_msg = verse_of_the_day_msg_dict.get(saved_version, verse_of_the_day_msg_dict["NIV"])
 
         # Sends the verse of the day message to all of the chats using a thread
         threading.Thread(target=send_message, args=(chat_id, verse_msg)).start()
@@ -592,11 +643,8 @@ async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
             # Calls the match object's get url function
             url = obj.get_url()
 
-            # Creates a task to get the webpage asynchronously
-            task = asyncio.create_task(session.get(url))
-
-            # Appends the task to the tasks list
-            tasks.append(task)
+            # Appends the task to get the webpage asynchronously to the tasks list
+            tasks.append(session.get(url))
 
         # Infinite loop so the bot keeps trying
         while True:
@@ -616,11 +664,13 @@ async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
     # Returns the list of htmls returned by the httpx module
     return [req.text for req in reqs]
 
+
 # Function to determine the version to be passed to the VerseMatch object
 def choose_version(default_version: str, bible_version: str) -> str:
 
     # Returns the bible version if it's not empty, otherwise, return the default version
     return bible_version if bible_version != "" else default_version
+
 
 # A function to search the bible verse and return the verse message so I don't have to write the same thing twice for the two threading classes to search the verse
 def search_verse(message: Optional[types.Message] = "", inline_query: Optional[types.InlineQuery] = "", inline: Optional[bool] = False) -> str:
@@ -723,6 +773,7 @@ class GetVerse(threading.Thread):
         
             reply_to(self.message, invalid_msg)
 
+
 # Handles the command /verse
 @bot.channel_post_handler(commands=["verse"])
 @bot.message_handler(commands=["verse"])
@@ -748,7 +799,8 @@ def verse_handler(message: types.Message) -> None:
 
         # Registers the next step handler
         handler.register_next_step_handler("verse", message)
-    
+
+
 # Searches for the bible verse given previously through the command /verse
 @bot.channel_post_handler(func=lambda message: handler.check_step("verse", message, 1))
 @bot.message_handler(func=lambda message: handler.check_step("verse", message, 1))
@@ -762,6 +814,7 @@ def get_verse(message: types.Message) -> None:
 
     # Removes the next step handler
     handler.clear_step_handler("verse", message)
+
 
 # A function to quickly check if a message contains a bible verse
 def quick_check(message: str) -> bool:
@@ -819,6 +872,7 @@ def find_verse(message: types.Message) -> None:
     # Starts the thread
     thread.start()
 
+
 # Checks the number portion of the bible verse
 def check_num_portion(message: str) -> bool:
     number_regex = regexes.number_regex
@@ -827,6 +881,7 @@ def check_num_portion(message: str) -> bool:
         return True
     else:
         return False
+
 
 # Checks the chapter ... verse ... portion of the bible verse
 def check_chapter_portion(message: str) -> bool:
@@ -837,6 +892,7 @@ def check_chapter_portion(message: str) -> bool:
     else:
         return False
 
+
 # Checks if there is any chapters mentioned without the word chapter
 def check_full_num_chapter(message: str) -> bool:
     full_chapter_num_regex = regexes.full_chapter_num_regex
@@ -846,6 +902,7 @@ def check_full_num_chapter(message: str) -> bool:
     else:
         return False
 
+
 # Checks if there is any chapters mentioned with the word chapter
 def check_full_chapt_chapter(message: str) -> bool:
     full_chapter_chapt_regex = regexes.full_chapter_chapt_regex
@@ -854,6 +911,7 @@ def check_full_chapt_chapter(message: str) -> bool:
         return True
     else:
         return False
+
 
 # Split a long message into different messages
 def split_message(message: types.Message, text: str, max_len: int = 4096, **kwargs) -> None:
@@ -917,6 +975,7 @@ def split_message(message: types.Message, text: str, max_len: int = 4096, **kwar
         else:
             send_message(message.chat.id, part, **kwargs)
 
+
 # Iterates the parts of the long message backwards to find the newline character
 def iterate_text(first_index: int, text: str) -> None:
 
@@ -932,6 +991,7 @@ def iterate_text(first_index: int, text: str) -> None:
 
             # Returns the index of the entire message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
             return first_index + check_backticks(i, text)
+
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
 def check_backticks(index: int, text: str) -> int:
@@ -957,14 +1017,26 @@ def check_backticks(index: int, text: str) -> int:
     # Returns the index + 1 as I want to include the newline character at the end of the message part (Telegram will automatically trim the message when it's sent so it's alright)
     return index + 1
 
+
 # Function to remove the specific message id from the database
 def remove_from_db(message_id: int) -> None:
 
     # Filters to remove the message id from the verse of the day database
     db["subbed"] = [sub for sub in db["subbed"] if sub != message_id]
 
-    # Filters the version database to remove the message id from the list
-    db["chats_version"] = [version for version in db["chats_version"] if not version.startswith(str(message_id))]
+    # Change the message ID into a string
+    message_id = str(message_id)
+
+    # Gets the dictionary containing the bible version for each chat
+    chats_version = db["chats_version"]
+
+    # Removes the chat ID from the dictionary if it exists
+    if message_id in chats_version:
+        del chats_version[message_id]
+
+    # Sets the dictionary in the database to the new one with the chat ID removed
+    db["chats_version"] = chats_version
+
 
 # The function to use in place of bot.send_message() to force the bot to send a message even if the connection is lost or an error occurs while sending the message
 def send_message(message_id: int, bot_message: str, **kwargs) -> None:
@@ -1037,6 +1109,7 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
             else:
                 logging.error(e)
 
+
 # Function to start the time checking thread
 def check_time() -> None:
 
@@ -1048,6 +1121,7 @@ def check_time() -> None:
         time_checker.start()
     
     # Does nothing if there is already a time check instance running
+
 
 # Function to send a post request to the monitoring bots
 def send_update() -> None:
@@ -1084,6 +1158,7 @@ def send_update() -> None:
         # Pauses the function for 5 minutes
         time.sleep(300)
 
+
 # Function to keep the bot alive
 def keep_bot_alive() -> None:
 
@@ -1109,7 +1184,6 @@ def keep_bot_alive() -> None:
         time.sleep(300)
 
     
-      
 # Function to run all the threads
 def run_threads() -> None:
 
@@ -1122,9 +1196,11 @@ def run_threads() -> None:
     # Calls the function to keep the bot alive in a thread
     threading.Thread(target=keep_bot_alive, daemon=True).start()
 
+
 # A test function for debugging and testing purposes
 def test() -> None:
     time.sleep(10)
+
 
 # For debugging purposes
 @bot.message_handler(commands=["debug"])
@@ -1148,7 +1224,7 @@ if __name__ == "__main__":
             # Also starts the send update thread to make sure the bot remains up
             run_threads()
 
-            #threading.Thread(target=send_verse_of_the_day).start()
+            # threading.Thread(target=lambda: asyncio.run(send_verse_of_the_day())).start()
             
             # Polls the telegram servers for a response
             bot.infinity_polling()
