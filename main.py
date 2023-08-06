@@ -619,11 +619,11 @@ async def send_verse_of_the_day() -> None:
     # Iterates the list of chat ids that have subscribed to the verse of the day
     for chat_id in subbed_list:
       
-        # Gets the saved version for the chat ID
-        saved_version = chats_version.get(str(chat_id))
+        # Gets the saved version for the chat ID and default to NIV if it isn't set
+        saved_version = chats_version.get(str(chat_id), "NIV")
 
         # The verse message to send to the person
-        verse_msg = verse_of_the_day_msg_dict.get(saved_version, verse_of_the_day_msg_dict["NIV"])
+        verse_msg = verse_of_the_day_msg_dict.get(saved_version)
 
         # Sends the verse of the day message to all of the chats using a thread
         threading.Thread(target=send_message, args=(chat_id, verse_msg)).start()
