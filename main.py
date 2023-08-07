@@ -506,11 +506,6 @@ def trusty_sleep(sleeptime: int) -> None:
         time.sleep(sleeptime - (time.time()-start))
 
 
-# Function to add a line break before a title
-def add_line_break(match_obj: re.Match) -> str:
-    text = match_obj.group()
-    return f"\n{text}"
-
 # Function to get the verse of the day
 async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
@@ -525,9 +520,9 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
     
             # Gets the verse of the day page from bible gateway
             verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
-    
-        # Adds line breaks before the headings in HTML
-        text = re.sub("</h[1-6]>", add_line_break, verse_of_the_day_page.text)
+
+        # Replaces all of the <br> tags with new lines
+        text = re.sub(r"<br */?>", "\n", verse_of_the_day_page.text)
     
         # Initialise the beautiful soup parser with lxml
         soup = BeautifulSoup(text, "lxml")
@@ -550,7 +545,7 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
     
             # Gets the text of the verse from the HTML
             verse_text = verse_soup.find("div", class_="rp-passage-text").get_text()
-          
+
             # Adds a left to right mark in front of the verse to force all text to be displayed left to right (stops the Hebrew symbols from appearing at the end of the line instead of the start of the line in Psalms 119)
             # Also removes all the spaces after a new line character
             verse_text = "\u200e" + re.sub("\n +", "\n", verse_text.strip())
