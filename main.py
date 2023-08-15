@@ -523,6 +523,9 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
         # Replaces all of the <br> tags with new lines
         text = re.sub(r"<br */?>", "\n", verse_of_the_day_page.text)
+
+        # Add line breaks to the end of every heading
+        text = re.sub(r"</h[1-6]>", lambda match: f"\n{match.group()}" , verse_of_the_day_page.text)
     
         # Initialise the beautiful soup parser with lxml
         soup = BeautifulSoup(text, "lxml")
