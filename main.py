@@ -581,7 +581,7 @@ async def send_verse_of_the_day() -> None:
     # An empty dictionary to add the version and their respective messages to
     # It will always contain NIV
     verse_of_the_day_msg_dict = {
-      "NIV": ""
+        "NIV": ""
     }
 
     # Iterates over the list of chat IDs that have subscribed to the verse of the day
@@ -599,24 +599,52 @@ async def send_verse_of_the_day() -> None:
     # The list of tasks
     tasks = []
 
+    # The list of versions in the dictionary
+    versions = list(verse_of_the_day_msg_dict.keys())
+
     # Iterates over all of the versions in the dictionary
-    for version in verse_of_the_day_msg_dict:
+    for version in versions:
 
         # Adds the task to get the verse of the day to the list of tasks
         tasks.append(get_verse_of_the_day(version))
 
-    # Gathers all of the verses of the day
-    verses_of_the_day = await asyncio.gather(*tasks)
+    # Gathers all of the verses of the day and collects the exceptions as well
+    verses_of_the_day = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Iterates over the verses of the day list and retries any exceptions found
+    for index, item in enumerate(verses_of_the_day):
+
+        # If the item is not an exception, continue the loop
+        if type(item) is not Exception:
+            continue
+
+        # Keep trying to get the verse of the day until it is successful
+        while True:
+
+            try:
+
+                # Try getting the verse of the day for the version again
+                new_verse_of_the_day = await get_verse_of_the_day(versions[index])
+
+                # Breaks the loop if getting the verse of the day is successful
+                break
+
+            # Logs the exception
+            except Exception as e:
+                logging.error(e)
+
+        # Put the verse of the day into the list
+        verses_of_the_day[index] = new_verse_of_the_day
 
     # Iterates over the versions in the dictionary
-    for index, version in enumerate(verse_of_the_day_msg_dict.keys()):
+    for index, version in enumerate(versions):
 
         # Sets the version in the dictionary to the verse of the day message
         verse_of_the_day_msg_dict[version] = f"Today's verse is: \n\n{verses_of_the_day[index]}"
 
     # Iterates the list of chat ids that have subscribed to the verse of the day
     for chat_id in subbed_list:
-      
+
         # Gets the saved version for the chat ID and default to NIV if it isn't set
         saved_version = chats_version.get(str(chat_id), "NIV")
 
@@ -625,6 +653,7 @@ async def send_verse_of_the_day() -> None:
 
         # Sends the verse of the day message to all of the chats using a thread
         threading.Thread(target=send_message, args=(chat_id, verse_msg)).start()
+
 
 # Function to get the webpage asynchronously
 async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
