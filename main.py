@@ -94,7 +94,7 @@ class TimeCheck(threading.Thread):
             if (current_time.hour, current_time.minute) == (verse_of_the_day_time[0], verse_of_the_day_time[1]) and current_time.day != datetime.datetime.fromisoformat(db["previous_sent_time"]).day:
 
                 # Calls the function to send the verse of the day message
-                asyncio.run(send_verse_of_the_day())
+                send_verse_of_the_day()
 
                 # Set the previous sent time to the current time
                 db["previous_sent_time"] = datetime.datetime.now().isoformat()
@@ -112,7 +112,7 @@ class TimeCheck(threading.Thread):
                     time.sleep(10)
 
                     # Sends the verse of the day
-                    asyncio.run(send_verse_of_the_day())
+                    send_verse_of_the_day()
   
                     # Set the previous sent time to the current time
                     db["previous_sent_time"] = datetime.datetime.now().isoformat()
@@ -457,7 +457,7 @@ def verse_start(message: types.Message) -> None:
     saved_version = db["chats_version"].get(str(message.chat.id), "NIV")
 
     # Gets the verse message
-    verse_msg = asyncio.run(get_verse_of_the_day(saved_version))
+    verse_msg = get_verse_of_the_day(saved_version)
 
     # Gets the list of subscribers to the verse of the day message
     sub_list = db["subbed"]
@@ -507,7 +507,7 @@ def trusty_sleep(sleeptime: int) -> None:
 
 
 # Function to get the verse of the day
-async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
+def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
     # Initialise the verse message
     verse_msg = ""
@@ -515,11 +515,21 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
     # While the verse message is nothing
     while verse_msg == "":
 
-        # Using the httpx async client
-        async with httpx.AsyncClient() as session:
+
+        # Keep trying until the request is successful
+        while True:
+
+            try:
+              
+                # Gets the verse of the day page from bible gateway
+                verse_of_the_day_page = s.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
     
-            # Gets the verse of the day page from bible gateway
-            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
+                # Exits the loop if the request is successful
+                break
+
+            # Logs the error if there's an error
+            except Exception as e:
+                logging.error(e)
 
         # Replaces all of the <br> tags with new lines
         text = re.sub(r"<br */?>", "\n", verse_of_the_day_page.text)
@@ -568,9 +578,7 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
 
 # Function to send the verse of the day
-async def send_verse_of_the_day() -> None:
-
-    # asyncio.sleep(15)
+def send_verse_of_the_day() -> None:
 
     # Gets the list of people who have subscribed to the verse of the day
     subbed_list = db["subbed"]
@@ -596,17 +604,14 @@ async def send_verse_of_the_day() -> None:
             # Adds the version to the dictionary
             verse_of_the_day_msg_dict[saved_version] = ""
 
-    # The list of tasks
-    tasks = []
+    # The list of verses of the day
+    verses_of_the_day = []
 
     # Iterates over all of the versions in the dictionary
     for version in verse_of_the_day_msg_dict:
 
-        # Adds the task to get the verse of the day to the list of tasks
-        tasks.append(get_verse_of_the_day(version))
-
-    # Gathers all of the verses of the day
-    verses_of_the_day = await asyncio.gather(*tasks)
+        # Adds the verse of the day to the list of verses of the day
+        verses_of_the_day.append(get_verse_of_the_day(version))
 
     # Iterates over the versions in the dictionary
     for index, version in enumerate(verse_of_the_day_msg_dict.keys()):
@@ -1222,7 +1227,7 @@ if __name__ == "__main__":
             # Also starts the send update thread to make sure the bot remains up
             run_threads()
 
-            # threading.Thread(target=lambda: asyncio.run(send_verse_of_the_day())).start()
+            # threading.Thread(target=send_verse_of_the_day()).start()
             
             # Polls the telegram servers for a response
             bot.infinity_polling()
