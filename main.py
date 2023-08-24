@@ -673,23 +673,40 @@ async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
             # Appends the task to get the webpage asynchronously to the tasks list
             tasks.append(session.get(url))
 
-        # Infinite loop so the bot keeps trying
-        while True:
-            
-            try:
-                
-                # The response objects
-                reqs = await asyncio.gather(*tasks)
-    
-                # Breaks the loop if successful
-                break;
+        # Gets all the response objects
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
 
-            # Catch any error and logs them
-            except Exception:
-                traceback.print_exc()
-    
+        # Iterates over the list of response objects
+        for index, item in enumerate(responses):
+
+            # Skips the item if it is not an exception
+            if type(item) is not Exception:
+                continue
+
+            # Otherwise, try getting the url again
+            # Infinite loop so that the bot keeps trying
+            while True:
+
+                try:
+
+                    # Gets the url from the object
+                    url = match_obj_list[index].get_url()
+
+                    # Gets the new response object
+                    new_response = session.get(url)
+
+                    # Sets the response object in the list to the new one
+                    responses[index] = new_response
+
+                    # Breaks the loop if it's successful
+                    break
+
+                # Otherwise, catch any error and logs them
+                except Exception as e:
+                    logging.error(e)
+
     # Returns the list of htmls returned by the httpx module
-    return [req.text for req in reqs]
+    return [response.text for response in responses]
 
 
 # Function to determine the version to be passed to the VerseMatch object
