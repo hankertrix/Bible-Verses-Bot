@@ -499,8 +499,8 @@ cdef class VerseMatch:
                 # Checks if the chapter requested is Greek Esther 8
                 elif self.match[0] == 8:
 
-                      # Changes the relevant verses to the parts before addition E
-                      relevant_verses = verses[:verses.find("Addition E")]
+                    # Changes the relevant verses to the parts before addition E
+                    relevant_verses = verses[:verses.find("Addition E")]
                 
                 # Checks if the chapter requested is Greek Esther 10
                 elif self.match[0] == 10:

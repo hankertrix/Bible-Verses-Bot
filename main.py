@@ -6,7 +6,7 @@
 # Conversations in pyrogram: https://nippycodes.com/coding/conversations-in-pyrogram-no-extra-package-needed/
 
 import re, os, datetime, time, threading, logging, asyncio, traceback
-import keep_alive, regexes
+import keep_alive, regexes, utils
 import httpx
 from request_sess import s
 from telebot import TeleBot, types
@@ -472,7 +472,7 @@ def verse_start(message: types.Message) -> None:
     sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_msg}"
 
     # Sends the message        
-    send_message(message.chat.id, sub_msg)
+    send_message(message.chat.id, sub_msg, parse_mode="markdown")
 
 
 # Handles the /stopverseoftheday command
@@ -521,9 +521,6 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
             # Gets the verse of the day page from bible gateway
             verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
 
-        # Replaces all of the <br> tags with new lines
-        text = re.sub(r"<br */?>", "\n", verse_of_the_day_page.text)
-
         # Add line breaks to the end of every heading
         text = re.sub(r"</h[1-6]>", lambda match: f"\n{match.group()}" , verse_of_the_day_page.text)
     
@@ -533,6 +530,16 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
         # Delete the footnotes and the cross references from the HTML
         for unwanted_tag in soup.select(".passage-other-trans, .footnote, .footnotes, .crossreference, .crossrefs"):
             unwanted_tag.decompose()
+
+        # Convert all of the <br> tags to a span tag containing a newline character
+        for tag in soup.select("br"):
+            tag.name = "span"
+            tag.string = "\n"
+
+        # Convert all of the text in <sup> tags to superscript
+        for tag in soup.select("sup"):
+            print(tag.text)
+            tag.string = utils.to_sups(tag.text.strip())
     
         # Selects all of the verses
         verses_soup = soup.select(".rp-passage")
@@ -652,7 +659,7 @@ async def send_verse_of_the_day() -> None:
         verse_msg = verse_of_the_day_msg_dict.get(saved_version)
 
         # Sends the verse of the day message to all of the chats using a thread
-        threading.Thread(target=send_message, args=(chat_id, verse_msg)).start()
+        threading.Thread(target=send_message, args=(chat_id, verse_msg), kwargs={"parse_mode": "markdown"}).start()
 
 
 # Function to get the webpage asynchronously
