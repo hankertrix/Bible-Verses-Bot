@@ -745,8 +745,8 @@ cdef class VerseMatch:
         cdef str title
         cdef str title_verses
 
-        # Replace the backticks in the response with a different backtick
-        self.res = re.sub("`", "\u02cb", self.res)
+        # Replace the backticks in the response with a different backtick so that it will not mess with the backticks used for markdown formatting in the message sent to the user
+        self.res = self.res.replace("`", "\u02cb")
 
         # Removes all spaces between tables
         self.res = re.sub("</tr> +<tr>", "</tr><tr>", self.res)

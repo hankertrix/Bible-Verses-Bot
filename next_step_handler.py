@@ -40,7 +40,7 @@ class NextStepHandler():
     """Function to clear the step handler for a function and chat id. Must always be called at the end of a conversation"""
 
     # Removes the entry from the dictionary
-    self.convos.pop(f"{convo_name}_convo {message.chat.id if message.from_user is None else message.from_user.id} {message.chat.id}")
+    self.convos.pop(f"{convo_name}_convo {message.chat.id if message.from_user is None else message.from_user.id} {message.chat.id}", None)
 
     
 

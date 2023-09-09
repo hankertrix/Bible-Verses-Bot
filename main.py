@@ -523,6 +523,9 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
         # Add line breaks to the end of every heading
         text = re.sub(r"</h[1-6]>", lambda match: f"\n{match.group()}" , verse_of_the_day_page.text)
+
+        # Replace all the backticks in the text with a different backtick so that it will not mess with the backtick used for markdown formatting in the message sent to the user
+        text = text.replace("`", "\u02cb")
     
         # Initialise the beautiful soup parser with lxml
         soup = BeautifulSoup(text, "lxml")
@@ -538,7 +541,6 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
 
         # Convert all of the text in <sup> tags to superscript
         for tag in soup.select("sup"):
-            print(tag.text)
             tag.string = utils.to_sups(tag.text.strip())
     
         # Selects all of the verses
