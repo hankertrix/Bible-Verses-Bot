@@ -24,6 +24,7 @@ ERRORS_TO_BREAK_ON = {
     "Bad Request: chat not found",
     "Bad Request: replied message not found",
     "Bad Request: group chat was upgraded to a supergroup chat",
+    "Bad Request: need administrator rights in the channel chat",
     "Bad Request: TOPIC_CLOSED",
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was kicked from the group chat",
