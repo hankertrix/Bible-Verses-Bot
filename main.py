@@ -520,7 +520,7 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
         async with httpx.AsyncClient() as session:
     
             # Gets the verse of the day page from bible gateway
-            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
+            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/2023/09/28?version=MSG")
 
         # Add line breaks to the end of every heading
         text = re.sub(r"</h[1-6]>", lambda match: f"\n{match.group()}" , verse_of_the_day_page.text)
@@ -568,6 +568,9 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
     
         # The verse message containing the verse name and the verse of the day
         verse_msg = "\n\n".join(verse_msg_list).strip()
+
+        # Remove random characters from the verse message, like the asterisks in the MSG version of the bible
+        verse_msg = re.sub("[¶*] *", "", verse_msg)
 
         # If the verse message is nothing, change the version to NIV
         if verse_msg == "":

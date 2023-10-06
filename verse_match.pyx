@@ -947,7 +947,7 @@ cdef class VerseMatch:
         # Gets rid of - at the back of the verses
         verses = verses.strip("—")
 
-        # Removes other random characters
+        # Removes other random characters, like the asterisks in the MSG version of the bible
         verses = re.sub("[¶*] *", "", verses)
 
         # Fixes all the hebrew characters being right to left
