@@ -520,7 +520,7 @@ async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
         async with httpx.AsyncClient() as session:
     
             # Gets the verse of the day page from bible gateway
-            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/2023/09/28?version=MSG")
+            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
 
         # Add line breaks to the end of every heading
         text = re.sub(r"</h[1-6]>", lambda match: f"\n{match.group()}" , verse_of_the_day_page.text)
