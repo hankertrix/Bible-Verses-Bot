@@ -1,7 +1,7 @@
 # Module to keep the bot alive
 
-from waitress import serve
 from flask import Flask
+from waitress import serve
 from threading import Thread
 
 app = Flask('')
