@@ -45,7 +45,7 @@ class Database(abc.MutableMapping):
     """Gets a value for a key in the database"""
 
     # Gets the value from the database
-    value =  self.db.reference(f"/{bot}/{key}").get()
+    value =  self.db.reference(f"{bot}/{key}").get()
 
     # If the value is empty, raise a key error
     if not value:
@@ -59,36 +59,35 @@ class Database(abc.MutableMapping):
     """Sets a value for a key in the database"""
 
     # Sets the value in the database
-    self.db.reference(f"/{bot}/{key}").set(value)
+    self.db.reference(f"{bot}/{key}").set(value)
 
   
   def __delitem__(self, key: str) -> None:
     """Deletes a key from the database"""
 
     # Deletes the item from the database
-    self.db.reference(f"/{bot}/{key}").delete()
+    self.db.reference(f"{bot}/{key}").delete()
 
 
   def __iter__(self) -> Iterator[Any]:
     """The iterator for the database"""
 
     # Returns an iterator of all the keys in the database
-    return iter(self.db.reference(f"/{bot}").get())
+    return iter(self.db.reference(f"{bot}").get())
 
 
   def __len__(self) -> int:
     """The number of keys in the database"""
 
     # Returns the number of keys
-    return len(self.db.reference(f"/{bot}").get())
+    return len(self.db.reference(f"{bot}").get())
 
 
   def keys(self) -> AbstractSet[str]:
     """Gets all the keys in the database"""
 
     # Returns all the keys as a set
-    return set(self.db.reference(f"/{bot}").get())
+    return set(self.db.reference(f"{bot}").get())
 
 
-
-
+db = Database()
