@@ -12,7 +12,7 @@ from request_sess import s
 from telebot import TeleBot, types
 from telebot.apihelper import ApiTelegramException
 from bs4 import BeautifulSoup
-from firebase_wrapper import Database
+from firebase_wrapper import db
 from typing import List, Tuple, Optional, Callable, Dict
 from bible_versions import bible_version_tuple, apocrypha_supported, bible_version_set, version_map
 from message_match import MessageMatch
@@ -48,9 +48,6 @@ logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 
 # Starts the server
 keep_alive.keep_alive()
-
-# Initialise the database
-db = Database()
 
 # Bot API key
 API_KEY = os.environ["API_KEY"]
@@ -1040,14 +1037,17 @@ def iterate_text(first_index: int, text: str) -> None:
     index = len(text) - 1
     # logging.debug(index)
 
-    # Iterates backwards through the string
-    for i in range(index, -1, -1):
+    # Iterates over the characters in the list
+    for character in ["\n", " "]:
 
-        # Checks if the message at the index is a newline character
-        if text[i] == "\n":
-
-            # Returns the index of the entire message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
-            return first_index + check_backticks(i, text)
+        # Iterates backwards through the string
+        for i in range(index, -1, -1):
+    
+            # Checks if the message at the index is the character in the set
+            if text[i] == character:
+    
+                # Returns the index of the entire message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
+                return first_index + check_backticks(i, text)
 
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
