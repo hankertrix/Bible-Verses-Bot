@@ -461,12 +461,12 @@ class MessageMatch:
         # Makes a list from the front part
         front_list = front_part.split()
 
-        # Removes the word chapter from the list
-        try:
+        # Tries to remove the word "chapter" from the list
+        if "chapter" in front_list:
             front_list.remove("chapter")
 
-        # If it doesn't exist, remove the word chapters from the list
-        except:
+        # If it doesn't exist, remove the word "chapters" from the list
+        elif "chapters" in front_list:
             front_list.remove("chapters")
 
         # The book of the bible mentioned
