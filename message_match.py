@@ -244,6 +244,9 @@ class MessageMatch:
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
 
+        # Replace semicolons with a comma
+        match = match.replace(";", ",")
+
         # Split the match using commas to get a list of verses
         verses_list = match.split(",")
 
@@ -333,6 +336,9 @@ class MessageMatch:
 
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
+
+        # Replace semicolons with commas
+        match = match.replace(";", ",")
 
         # Splits the match based on commas
         verse_list = match.split(",")
@@ -490,8 +496,12 @@ class MessageMatch:
         # The book code that is going to be used to search the bible verses
         book_code = bible_chapt_dict[book_title]
 
+        # Gets the chapter number portion and replace all the semicolons
+        # with a comma
+        chapter_number_portion = match_list[1].replace(";", ",")
+
         # Splits the chapter number portion into a list using commas
-        chapter_list = self.remove_empty(match_list[1].split(","))
+        chapter_list = self.remove_empty(chapter_number_portion.split(","))
 
         # Adds the chapters to the object list
         self.append_chapters(match_index, book_code, chapter_list, bible_version)
@@ -523,8 +533,12 @@ class MessageMatch:
         # Gets the book code to pass to the VerseMatch class
         book_code = bible_chapt_dict[book_title]
 
+        # Gets the chapter number portion and replace all the semicolons
+        # with a comma
+        chapter_number_portion = match_list[1].replace(";", ",")
+
         # Splits the chapter number portion of the match using commas
-        chapter_list = self.remove_empty(match_list[1].split(","))
+        chapter_list = self.remove_empty(chapter_number_portion.split(","))
 
         # Makes the current index variable so the matches can be sorted
         self.append_chapters(match_index, book_code, chapter_list, bible_version)
