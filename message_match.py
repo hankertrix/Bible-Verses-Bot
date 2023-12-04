@@ -79,6 +79,15 @@ class MessageMatch:
                     # Returns the word "greek"
                     return "greek"
 
+            # Checks if the "book number" is d
+            elif booknum == "d":
+
+                # Checks if d is part of the word add
+                if self.msg[bookindex-2:bookindex+1] == "add":
+
+                    # Returns the word "add"
+                    return "add"
+
             # Checks if the "book number" is f
             elif booknum == "f":
 

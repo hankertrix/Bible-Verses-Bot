@@ -144,7 +144,8 @@ bible_dict = {
     "4mac": "4Macc",
     "4 mac": "4Macc",
     "men": "SgThree",
-    "to est": "AddEsth"
+    "to est": "AddEsth",
+    "add est": "AddEsth"
 }
 
 
@@ -440,7 +441,25 @@ bible_chapt_dict = {
     "addition to esth": "AddEsth",
     "addition to esther": "AddEsth",
     "additions to esth": "AddEsth",
-    "additions to esther": "AddEsth"
+    "additions to esther": "AddEsth",
+    "add esth": "AddEsth",
+    "add esther": "AddEsth",
+    "addition esth": "AddEsth",
+    "addition esther": "AddEsth",
+    "additions esth": "AddEsth",
+    "additions esther": "AddEsth",
+    "add to est": "AddEsth",
+    "add to ester": "AddEsth",
+    "addition to est": "AddEsth",
+    "addition to ester": "AddEsth",
+    "additions to est": "AddEsth",
+    "additions to ester": "AddEsth",
+    "add est": "AddEsth",
+    "add ester": "AddEsth",
+    "addition est": "AddEsth",
+    "addition ester": "AddEsth",
+    "additions est": "AddEsth",
+    "additions ester": "AddEsth",
 }
 
 # The set of bible books that only have one chapter
@@ -448,7 +467,7 @@ one_chapt_books = {
 
     # Standard chapters
     "Obad", "Phlm", "2John", "3John", "Jude",
-    
+
     # Apocryphas
     "EpJer", "PrAzar", "Sus", "Bel", "PrMan", "SgThree"
 }
