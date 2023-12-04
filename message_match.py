@@ -6,22 +6,23 @@ import regexes
 from bible_books import bible_dict, bible_chapt_dict
 from bible_versions import bible_version_set, version_map
 
+
 # Class of objects representing the initial matches found in the message
 class MessageMatch:
 
     # Using slots so the bot runs faster and uses less memory
     __slots__ = ("msg", "matches", "matches_index", "dic")
-    
+
     def __init__(self, msg: str) -> None:
         self.msg = msg
         self.matches = []
         self.matches_index = []
         self.dic = {}
-    
+
     # Converts the string in the matches to integers
     def convert_to_int(self, match_list: List[str]) -> List[int]:
         return [int(i) for i in match_list]
-    
+
     # The function to add a pipe character in front of the numbers in full chapters for easier splitting
     def add_pipe(self, match: re.Match) -> str:
 
@@ -35,11 +36,11 @@ class MessageMatch:
         if len(match_list) < 3:
             last_verse = match_list[1] + 1
             match_list.append(last_verse)
-        
+
         else:
             last_verse = match_list[2] + 1
             match_list[2] = last_verse
-        
+
         # Returns the match list
         return match_list
 
@@ -49,10 +50,10 @@ class MessageMatch:
 
         # Checks if the book index is negative
         if bookindex < 0:
-            
+
             # Sets the booknum to nothing
             return ""
-        
+
         # If the book index is positive
         else:
 
@@ -61,35 +62,35 @@ class MessageMatch:
 
             # Checks if the character right before the book title is a newline character
             if self.msg[bookindex+1] == "\n":
-                
+
                 # Set the book number to nothing if the character before the book title is a newline character
                 return ""
-            
+
             # Checks if the book number is 1, 2 or 3 and sets the book number to the respective number
             elif booknum in "1234":
                 return booknum
-            
+
             # Checks if the "book number" is k
             elif booknum == "k":
-                
+
                 # Checks the k is part of the word greek or grk or gk
                 if self.msg[bookindex-4:bookindex+1] == "greek" or self.msg[bookindex-2:bookindex+1] == "grk" or self.msg[bookindex-1] == "g":
 
                     # Returns the word "greek"
                     return "greek"
-                
+
             # Checks if the "book number" is f
             elif booknum == "f":
 
                 # Checks if f is part of the word of
                 if self.msg[bookindex-1:bookindex+1] == "of":
-                    
+
                     # Returns the word "of"
                     return "of"
-                
+
             # Checks if the "book number" is o
             elif booknum == "o":
-                
+
                 # Checks if o is part of the word to
                 if self.msg[bookindex-1:bookindex+1] == "to":
 
@@ -104,7 +105,7 @@ class MessageMatch:
 
                     # Returns the word "ep"
                     return "ep"
-                
+
             # Sets the book number to nothing otherwise
             else:
                 return ""
@@ -113,19 +114,19 @@ class MessageMatch:
     def shorten_book(self, book: str) -> str:
 
         # Removes the ( bracket
-        book = book.replace("(","").strip()
-        
+        book = book.replace("(", "").strip()
+
         # For Philippians, Philemon, Prayer of Azariah, Letter of Jeremiah, Greek Esther and Prayer of Manasseh
         book_title = book[:5]
-        
+
         # For Judges and all the books with numbers in front of them (e.g. 1 John, 2 Chronicles and 1 Esdras)
         if book_title not in bible_dict:
             book_title = book[:4]
-            
+
             # For the rest of the books
             if book_title not in bible_dict:
                 book_title = book[:3]
-        
+
         # Returns the book title
         return book_title.strip()
 
@@ -134,7 +135,7 @@ class MessageMatch:
         msg = self.msg
         index = match_index
         book_index = 0
-        
+
         # Iterating backwards from the previously matched start index
         while index > 0:
             index -= 1
@@ -150,12 +151,12 @@ class MessageMatch:
                     break
 
             # To handle an index error (no idea how it happens but it happens)
-            except:
+            except IndexError:
                 break
 
         # In the case of no spaces before the words
         book_index = index
-        
+
         # Gets the book number
         book_num = self.find_book_num(book_index)
 
@@ -185,7 +186,7 @@ class MessageMatch:
 
             # Stops the program from adding the duplicates to the list
             return
-        
+
         # Appends the match index to the list of match indexes
         self.matches_index.append(match_index)
 
@@ -203,7 +204,7 @@ class MessageMatch:
 
         # Checks if the bible version is not given
         if not match_obj:
-            
+
             # Returns a tuple of the match and an empty string
             return (match, "")
 
@@ -221,13 +222,13 @@ class MessageMatch:
 
             # Returns a tuple of the match and the version
             return (match, bible_version)
-        
+
         # If it's not
         else:
 
             # Returns a tuple of the match and an empty string
             return (match, "")
-        
+
     # The function to convert the multiple bible verses with a semicolon into multiple lists
     def multi_num_convert(self, book_code: str, match_index: int, match: str) -> None:
 
@@ -245,7 +246,7 @@ class MessageMatch:
 
         # Iterates the list of matches
         for verse in verses_list:
-          
+
             # Checks if the item in the list contains a semicolon
             if ":" in verse:
 
@@ -256,11 +257,11 @@ class MessageMatch:
                 default_chapter = int(verse_list[0])
 
                 # Splits the message like a normal number bible verse to get the bible chapter, the starting and ending verse
-                match_list = verse.replace(":","-").split("-")
+                match_list = verse.replace(":", "-").split("-")
 
                 # Adds the match list and the match index to the object list
                 self.add_to_lists(book_code, current_index, match_list, bible_version)
-            
+
             # If there is no semicolon
             else:
 
@@ -284,15 +285,15 @@ class MessageMatch:
 
     # The function to convert a single bible verse to a list
     def num_convert(self, book_code: str, match_index: int, match: str) -> None:
-        
+
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
 
         # Replaces the dashes with spaces in the match
-        match_no_dash = match.replace("-"," ")
+        match_no_dash = match.replace("-", " ")
 
         # The list containing the bible chapter and the bible verse
-        match_list = match_no_dash.replace(":"," ").split()
+        match_list = match_no_dash.replace(":", " ").split()
 
         # Adds the match list and the match index to the object list
         self.add_to_lists(book_code, match_index, match_list, bible_version)
@@ -306,21 +307,21 @@ class MessageMatch:
         # Checks if the book title is not in the dictionary and stops any further execution of the program
         if book_title not in bible_dict:
             return
-        
+
         # The book code that is going to be passed to the other functions
         book_code = bible_dict[book_title]
 
         # If there are multiple bible verses
         if "," in match:
             self.multi_num_convert(book_code, match_index, match)
-        
+
         # Single bible verse
         else:
             self.num_convert(book_code, match_index, match)
-    
+
     # The function to convert multiple bible verses with the chapter ... verse ... format into multiple lists to pass to the VerseMatch class
     def multi_chapt_convert(self, book_code: str, match_index: int, match: str) -> None:
-        
+
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
 
@@ -335,7 +336,7 @@ class MessageMatch:
 
         # Iterates the front part list and removes the items that are not digits
         for part in front_part.copy():
-            
+
             # Checks if the item is not a digit
             if not part.isdigit():
 
@@ -368,17 +369,17 @@ class MessageMatch:
 
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
-        
+
         # The list containing the important information about the match
-        match_list = match.replace("-"," ").split()
+        match_list = match.replace("-", " ").split()
 
         # Iterates the match list and removes all the words
         for i in match_list.copy():
-            
+
             # If the item is not a digit, remove it, leaving the list with only numbers
             if not i.isdigit():
                 match_list.remove(i)
-        
+
         # Adds the match list and the match index to the object list
         self.add_to_lists(book_code, match_index, match_list, bible_version)
 
@@ -391,18 +392,18 @@ class MessageMatch:
         # Checks if the book title is not in the dictionary and stops any further execution of the program
         if book_title not in bible_dict:
             return
-        
+
         # The book code that is going to be passed to the other functions
         book_code = bible_dict[book_title]
 
         # If there are multiple bible verses
         if "," in match:
             self.multi_chapt_convert(book_code, match_index, match)
-        
+
         # Single bible verse
         else:
             self.chapt_convert(book_code, match_index, match)
-    
+
     # Function to iterate the chapter list and add it to the object list
     def append_chapters(self, match_index: int, book_code: str, chapter_list: List[str], bible_version: str) -> None:
 
@@ -420,31 +421,31 @@ class MessageMatch:
 
                 # Appends the chapter information to the object list
                 self.add_to_lists(book_code, current_index, [chapter_nums[0], 1, 176], bible_version)
-            
+
             # If the length is not one
             else:
 
                 # Iterates the chapters
                 for i in range(int(chapter_nums[0]), int(chapter_nums[1])+1):
-                    
+
                     # Adds the chapter information to the object list
                     self.add_to_lists(book_code, current_index, [i, 1, 176], bible_version)
 
                     # Increases the current index by 1
                     current_index += 1
-            
+
             # Increases the current index by 1 so the verses will be sorted correctly
             current_index += 1
 
     # Removes empty characters from the chapter list
     def remove_empty(self, chapter_list: List[str]) -> List[str]:
-        
+
         # Returns the chapter list without any empty characters
         return [char for char in chapter_list if len(char.strip()) != 0]
 
     # The converter to convert the chapter match with the word chapter in it to a list to pass to the VerseMatch class
     def full_chapt_converter(self, match_index: int, match: str) -> None:
-        
+
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
 
@@ -463,7 +464,7 @@ class MessageMatch:
         # Removes the word chapter from the list
         try:
             front_list.remove("chapter")
-        
+
         # If it doesn't exist, remove the word chapters from the list
         except:
             front_list.remove("chapters")
@@ -473,10 +474,10 @@ class MessageMatch:
 
         # Checks if the book title is not inside the dictionary
         if book_title not in bible_chapt_dict:
-            
+
             # Stops further execution if it's not
             return
-        
+
         # The book code that is going to be used to search the bible verses
         book_code = bible_chapt_dict[book_title]
 
@@ -485,11 +486,10 @@ class MessageMatch:
 
         # Adds the chapters to the object list
         self.append_chapters(match_index, book_code, chapter_list, bible_version)
-                
-    
+
     # The converter to convert the chapter match without the word chapter in it to a list to be passed to the VerseMatch class
     def full_num_converter(self, match_index: int, match: str) -> None:
-        
+
         # Gets the match and bible version from the search_version function
         match, bible_version = self.search_version(match)
 
@@ -510,7 +510,7 @@ class MessageMatch:
 
             # Stops any further execution
             return
-        
+
         # Gets the book code to pass to the VerseMatch class
         book_code = bible_chapt_dict[book_title]
 
@@ -519,23 +519,23 @@ class MessageMatch:
 
         # Makes the current index variable so the matches can be sorted
         self.append_chapters(match_index, book_code, chapter_list, bible_version)
-    
+
     # The reading phase of the previous version of the bot is now fully contained in this function
     # Converter function that decides what to do with the different types of matches and pass them to their respective converters
     def converter(self, match_index: int, match: str) -> None:
-        
+
         # For bible verses that are in the format John 3:16
         if ":" in match:
             self.num_converter(match_index, match)
-        
+
         # For bible verses that are in the format John Chapter 3 Verse 16
         elif "chapter" in match and "verse" in match:
             self.chapt_converter(match_index, match)
-        
+
         # For bible chapters that are in the format John Chapter 3
         elif "chapter" in match:
             self.full_chapt_converter(match_index, match)
-        
+
         # For bible chapters that are in the format John 3
         else:
             self.full_num_converter(match_index-1, match)
@@ -548,7 +548,7 @@ class MessageMatch:
         self.matches_index.clear()
         for match in num_regex.finditer(text):
             self.converter(match.start(), match.group())
-    
+
     # Finds the chapter ... verse ... portion of the bible verse and passes the match and the match index to the converter function
     def find_chapt(self) -> None:
         text = self.msg
@@ -562,7 +562,7 @@ class MessageMatch:
         full_num_regex = regexes.full_chapter_num_regex
         for match in full_num_regex.finditer(text):
             self.converter(match.start(), match.group())
-    
+
     # Finds the chapters mentioned with the word chapter and passes the match and the match index to the converter function
     def find_full_chapt(self) -> None:
         text = self.msg
@@ -576,7 +576,7 @@ class MessageMatch:
         self.find_chapt()
         self.find_full_chapt()
         self.find_full_num()
-        
+
     # Makes a dictionary of matches sorted by the match index
     def make_dic(self) -> None:
 
@@ -585,15 +585,15 @@ class MessageMatch:
 
         self.find_all()
         self.dic = {}
-        
+
         # Create a temporary dictionary to sort through
         temp_dic = dict(zip(self.matches_index, self.matches))
-        
+
         # Sorting according to the match index
         for i in sorted(temp_dic):
-            
+
             # Sets the key and value pair in the new dictionary to the one in the temporary dictionary
             self.dic[i] = temp_dic[i]
-        
+
         # For measuring performance
         # logging.debug(f"MessageMatch time taken: {time.perf_counter() - start_time}")
