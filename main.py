@@ -5,15 +5,24 @@
 # Pyrogram's pdf documentation: https://buildmedia.readthedocs.org/media/pdf/pyrogram/stable/pyrogram.pdf
 # Conversations in pyrogram: https://nippycodes.com/coding/conversations-in-pyrogram-no-extra-package-needed/
 
-import re, os, datetime, time, threading, logging, asyncio, traceback
-import keep_alive, regexes, utils
+import re
+import os
+import datetime
+import time
+import threading
+import logging
+import asyncio
+import traceback
+import keep_alive
+import regexes
+import utils
 import httpx
 from request_sess import s
 from telebot import TeleBot, types
 from telebot.apihelper import ApiTelegramException
 from bs4 import BeautifulSoup
 from firebase_wrapper import db
-from typing import List, Tuple, Optional, Callable, Dict
+from typing import List, Tuple, Optional, Callable, Dict, Union, Literal
 from bible_versions import bible_version_tuple, apocrypha_supported, bible_version_set, version_map
 from message_match import MessageMatch
 from verse_match import VerseMatch
@@ -60,7 +69,7 @@ handler = NextStepHandler(max_step=1)
 
 # The time to send out the verse of the day message in 24 hours
 # It should be set to (12, 0) for 12:00pm
-verse_of_the_day_time: Tuple[int] = (12, 0)
+verse_of_the_day_time: Tuple[int, int] = (12, 0)
 
 # Multi-threading so the bot can still run while giving the verse of the day daily
 class TimeCheck(threading.Thread):
@@ -160,7 +169,7 @@ def debounce_inline_query(duration: float) -> Callable:
     def decorator(inline_query_handler: Callable[[types.InlineQuery], None]) -> Callable[[types.InlineQuery], None]:
 
         # The dictionary of inline queries from different users
-        inline_query_dict: Dict[str, threading.Timer] = {}
+        inline_query_dict: Dict[Union[int, str], threading.Timer] = {}
 
         # The actual debounce function that pauses the inline query handler until the wait duration has passed
         def actual_debounce(inline_query: types.InlineQuery) -> None:
@@ -343,7 +352,7 @@ def display_version(message: types.Message) -> None:
 def handle_version(message: types.Message) -> None:
 
     # The content of the message behind the /setversion command
-    msg_ctx = re.sub("/setversion ?", "", message.text.lower())
+    msg_ctx = re.sub("/setversion ?", "", message.text.lower()) if message.text else ""
 
     # Checks if there is nothing behind the /setversion command
     if msg_ctx == "":
@@ -367,7 +376,8 @@ def handle_version(message: types.Message) -> None:
 def set_version(message: types.Message, ctx: str = "") -> None:
 
     # Checks if the context is not given
-    if ctx == "":
+    # And if the message text is given (it should always be given)
+    if ctx == "" and message.text:
 
         # Sets the version to the entire message given by the user
         version_given = message.text.upper().strip()
@@ -507,7 +517,7 @@ def trusty_sleep(sleeptime: int) -> None:
 
 
 # Function to get the verse of the day
-async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
+async def get_verse_of_the_day(version = "NIV") -> str:
 
     # Initialise the verse message
     verse_msg = ""
@@ -729,7 +739,7 @@ def choose_version(default_version: str, bible_version: str) -> str:
 
 
 # A function to search the bible verse and return the verse message so I don't have to write the same thing twice for the two threading classes to search the verse
-def search_verse(message: Optional[types.Message] = "", inline_query: Optional[types.InlineQuery] = "", inline: Optional[bool] = False) -> str:
+def search_verse(message: Union[types.Message, str] = "", inline_query: Union[types.InlineQuery, str] = "", inline: Optional[bool] = False) -> str:
 
     # For measuring performance
     # start_time = time.perf_counter()
@@ -836,7 +846,7 @@ class GetVerse(threading.Thread):
 def verse_handler(message: types.Message) -> None:
 
     # Removes the command from the message
-    msg = message.text.lower().replace(r"/verse", "").strip()
+    msg = message.text.lower().replace(r"/verse", "").strip() if message.text else ""
 
     # Checks if the msg still has other words
     if msg:
@@ -1033,7 +1043,7 @@ def split_message(message: types.Message, text: str, max_len: int = 4096, **kwar
 
 
 # Iterates the parts of the long message backwards to find the newline character
-def iterate_text(first_index: int, text: str) -> None:
+def iterate_text(first_index: int, text: str) -> int:
 
     # Subtract 1 from the length of the text as indexing starts from 0
     index = len(text) - 1
@@ -1050,6 +1060,11 @@ def iterate_text(first_index: int, text: str) -> None:
     
                 # Returns the index of the entire message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
                 return first_index + check_backticks(i, text)
+
+    # If the characters aren't found, return the length of the string
+    # This should never happen
+    # This is just here to satisfy the type checking
+    return len(text)
 
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
@@ -1084,14 +1099,14 @@ def remove_from_db(message_id: int) -> None:
     db["subbed"] = [sub for sub in db["subbed"] if sub != message_id]
 
     # Change the message ID into a string
-    message_id = str(message_id)
+    message_id_str = str(message_id)
 
     # Gets the dictionary containing the bible version for each chat
     chats_version = db["chats_version"]
 
     # Removes the chat ID from the dictionary if it exists
-    if message_id in chats_version:
-        del chats_version[message_id]
+    if message_id_str in chats_version:
+        del chats_version[message_id_str]
 
     # Sets the dictionary in the database to the new one with the chat ID removed
     db["chats_version"] = chats_version
