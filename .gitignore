@@ -11,5 +11,8 @@ __pycache__/
 # Python virtual environment
 venv/
 
-# Compiled C extensions
+# Cython created files
 *.so
+*.o
+*.c
+*.html
