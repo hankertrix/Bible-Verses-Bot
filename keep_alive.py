@@ -7,7 +7,7 @@ from threading import Thread
 app = Flask('')
 
 @app.route('/')
-def main() -> None:
+def main() -> str:
     return "Your bot is alive!"
 
 def run() -> None:
