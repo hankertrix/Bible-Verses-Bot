@@ -283,6 +283,8 @@ The bot will only detect bible verses written in these formats:
 - Luke 9:1-10
 - Deuteronomy 1:3,5-7,10,4:2-4,6,8-10 KJV
 - Ezra 3:1, 3-7, 5:3, 6:3-7, 10
+- Ruth 1:10-11; 4:2-6, 10,21
+- 2 Samuel 3:4;5:13-14, 20
 - Titus 1 NKJV
 - Hebrews 3, 5-7, 10
 - 2 Chronicles Chapter 2 Verse 6 NCV
@@ -1369,19 +1371,21 @@ Song of songs chapter 5-9
 
 # Test message
 '''
-- 1 John 1:9
+- 1 John 1:9 NIV
 - Luke 9:1-10
-- Deuteronomy 1:3,5-7,10,4:2-4,6,8-10
+- Deuteronomy 1:3,5-7,10,4:2-4,6,8-10 KJV
 - Ezra 3:1, 3-7, 5:3, 6:3-7, 10
-- Titus 1
+- Ruth 1:10-11; 4:2-6, 10,21
+- 2 Samuel 3:4;5:13-14, 20
+- Titus 1 NKJV
 - Hebrews 3, 5-7, 10
-- 2 Chronicles Chapter 2 Verse 6
+- 2 Chronicles Chapter 2 Verse 6 NCV
 - 3 John Chapter 1 Verses 1-13
-- Genesis Chapter 1 Verse 9 to 11
+- Genesis Chapter 1 Verse 9 to 11 NASB
 - Job Chapter 1 Verse 1,4-8,11
 - Daniel Chapter 5 Verses 4 to 6, 10-13, 17
-- Nehemiah Chapter 10
-- Hosea Chapter 3-4,8
+- Nehemiah Chapter 10 ESV
+- Hosea Chapters 3-4,8
 
 1 Thessalonians 300:200-311
 Luke 3:16
@@ -1393,7 +1397,8 @@ Psalm 119-122
 Titus 5,6-10,14
 Ezekiel 5
 Song of songs 4, 9
-2John 5
+2John 5;6; 7
+1Kings 1;4, 5; 6
 3:00pm
 4:00 pm
 
