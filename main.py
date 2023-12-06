@@ -5,15 +5,24 @@
 # Pyrogram's pdf documentation: https://buildmedia.readthedocs.org/media/pdf/pyrogram/stable/pyrogram.pdf
 # Conversations in pyrogram: https://nippycodes.com/coding/conversations-in-pyrogram-no-extra-package-needed/
 
-import re, os, datetime, time, threading, logging, asyncio, traceback
-import keep_alive, regexes, utils
+import re
+import os
+import datetime
+import time
+import threading
+import logging
+import asyncio
+import traceback
+import keep_alive
+import regexes
+import utils
 import httpx
 from request_sess import s
 from telebot import TeleBot, types
 from telebot.apihelper import ApiTelegramException
 from bs4 import BeautifulSoup
 from firebase_wrapper import db
-from typing import List, Tuple, Optional, Callable, Dict
+from typing import List, Tuple, Optional, Callable, Dict, Union, Literal
 from bible_versions import bible_version_tuple, apocrypha_supported, bible_version_set, version_map
 from message_match import MessageMatch
 from verse_match import VerseMatch
@@ -60,7 +69,7 @@ handler = NextStepHandler(max_step=1)
 
 # The time to send out the verse of the day message in 24 hours
 # It should be set to (12, 0) for 12:00pm
-verse_of_the_day_time: Tuple[int] = (12, 0)
+verse_of_the_day_time: Tuple[int, int] = (12, 0)
 
 # Multi-threading so the bot can still run while giving the verse of the day daily
 class TimeCheck(threading.Thread):
@@ -160,7 +169,7 @@ def debounce_inline_query(duration: float) -> Callable:
     def decorator(inline_query_handler: Callable[[types.InlineQuery], None]) -> Callable[[types.InlineQuery], None]:
 
         # The dictionary of inline queries from different users
-        inline_query_dict: Dict[str, threading.Timer] = {}
+        inline_query_dict: Dict[Union[int, str], threading.Timer] = {}
 
         # The actual debounce function that pauses the inline query handler until the wait duration has passed
         def actual_debounce(inline_query: types.InlineQuery) -> None:
@@ -262,7 +271,7 @@ To see more information about the bot, use the /help command.
 
 Hopefully this bot will help you in your journey with God!'''
     
-    send_message(message.chat.id, start_msg)
+    send_message(message.chat.id, start_msg, message.message_thread_id)
 
 
 # Handles the /help command
@@ -314,7 +323,7 @@ For any bug reports, enquiries or feedback, please contact @hankertrix.
 
 Hopefully you'll find this bot useful!'''
     
-    send_message(message.chat.id, help_msg)
+    send_message(message.chat.id, help_msg, message.message_thread_id)
 
 
 # A function to get the version from the database and returns NIV if there is no default version found
@@ -334,7 +343,7 @@ def display_version(message: types.Message) -> None:
     version_message = f"The current bible version is {version}."
 
     # Sends the message
-    send_message(message.chat.id, version_message)
+    send_message(message.chat.id, version_message, message.message_thread_id)
 
 
 # Handles the /setversion command
@@ -343,13 +352,13 @@ def display_version(message: types.Message) -> None:
 def handle_version(message: types.Message) -> None:
 
     # The content of the message behind the /setversion command
-    msg_ctx = re.sub("/setversion ?", "", message.text.lower())
+    msg_ctx = re.sub("/setversion ?", "", message.text.lower()) if message.text else ""
 
     # Checks if there is nothing behind the /setversion command
     if msg_ctx == "":
 
         # Sends the message to the user
-        send_message(message.chat.id, "Please enter your bible version.")
+        send_message(message.chat.id, "Please enter your bible version.", message.message_thread_id)
 
         # Register the next step handler
         handler.register_next_step_handler("setversion", message)
@@ -367,7 +376,8 @@ def handle_version(message: types.Message) -> None:
 def set_version(message: types.Message, ctx: str = "") -> None:
 
     # Checks if the context is not given
-    if ctx == "":
+    # And if the message text is given (it should always be given)
+    if ctx == "" and message.text:
 
         # Sets the version to the entire message given by the user
         version_given = message.text.upper().strip()
@@ -404,7 +414,7 @@ def set_version(message: types.Message, ctx: str = "") -> None:
         version_changed_msg = f"The current bible version has changed to {version_given}."
 
         # Sends the message
-        send_message(message.chat.id, version_changed_msg)
+        send_message(message.chat.id, version_changed_msg, message.message_thread_id)
  
     # If the bible version given is not in the list
     else:
@@ -440,7 +450,7 @@ def list_bible_versions(message: types.Message) -> None:
     list_version_msg = f"Accepted bible versions: \n\n\nEnglish versions: \n\n{english_versions} \n\n\nChinese versions: \n\n{chinese_versions} \n\n\nBible versions that support Apocrypha (English only): \n\n{apocrypha_versions}"
 
     # Sends the message
-    send_message(message.chat.id, list_version_msg)
+    send_message(message.chat.id, list_version_msg, message.message_thread_id)
 
 
 # Gets the specific message id from the database
@@ -472,7 +482,7 @@ def verse_start(message: types.Message) -> None:
     sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_msg}"
 
     # Sends the message        
-    send_message(message.chat.id, sub_msg, parse_mode="markdown")
+    send_message(message.chat.id, sub_msg, message.message_thread_id, parse_mode="markdown")
 
 
 # Handles the /stopverseoftheday command
@@ -491,12 +501,12 @@ def verse_stop(message: types.Message) -> None:
 
         # Message to acknowledge that they have been unsubscribed
         stop_msg = "You will no longer receive the verse of the day daily. To re-enable, use the /verseoftheday or /votd command."
-        send_message(message.chat.id, stop_msg)
+        send_message(message.chat.id, stop_msg, message.message_thread_id)
     
     # Sends them a message to tell them to subscribe first
     else:
         not_subbed_msg = "You haven't subscribed to receive the verse of the day. Please subscribe first using the /verseoftheday or the /votd command."
-        send_message(message.chat.id, not_subbed_msg)
+        send_message(message.chat.id, not_subbed_msg, message.message_thread_id)
 
 
 # More reliable time.sleep() because I'm pausing the verse of the day thread execution for a long time
@@ -507,7 +517,7 @@ def trusty_sleep(sleeptime: int) -> None:
 
 
 # Function to get the verse of the day
-async def get_verse_of_the_day(version = "NIV") -> Tuple[str]:
+async def get_verse_of_the_day(version = "NIV") -> str:
 
     # Initialise the verse message
     verse_msg = ""
@@ -729,7 +739,7 @@ def choose_version(default_version: str, bible_version: str) -> str:
 
 
 # A function to search the bible verse and return the verse message so I don't have to write the same thing twice for the two threading classes to search the verse
-def search_verse(message: Optional[types.Message] = "", inline_query: Optional[types.InlineQuery] = "", inline: Optional[bool] = False) -> str:
+def search_verse(message: Union[types.Message, str] = "", inline_query: Union[types.InlineQuery, str] = "", inline: Optional[bool] = False) -> str:
 
     # For measuring performance
     # start_time = time.perf_counter()
@@ -836,7 +846,7 @@ class GetVerse(threading.Thread):
 def verse_handler(message: types.Message) -> None:
 
     # Removes the command from the message
-    msg = message.text.lower().replace(r"/verse", "").strip()
+    msg = message.text.lower().replace(r"/verse", "").strip() if message.text else ""
 
     # Checks if the msg still has other words
     if msg:
@@ -851,7 +861,7 @@ def verse_handler(message: types.Message) -> None:
     else:
   
         # Sends the message to the user
-        send_message(message.chat.id, "Please enter your bible verses.")
+        send_message(message.chat.id, "Please enter your bible verses.", message.message_thread_id)
 
         # Registers the next step handler
         handler.register_next_step_handler("verse", message)
@@ -1029,11 +1039,11 @@ def split_message(message: types.Message, text: str, max_len: int = 4096, **kwar
         
         # All other messages after the first is sent as a normal message
         else:
-            send_message(message.chat.id, part, **kwargs)
+            send_message(message.chat.id, part, message.message_thread_id, **kwargs)
 
 
 # Iterates the parts of the long message backwards to find the newline character
-def iterate_text(first_index: int, text: str) -> None:
+def iterate_text(first_index: int, text: str) -> int:
 
     # Subtract 1 from the length of the text as indexing starts from 0
     index = len(text) - 1
@@ -1050,6 +1060,11 @@ def iterate_text(first_index: int, text: str) -> None:
     
                 # Returns the index of the entire message (not the message part) and calls the check_backticks function so that the message wouldn't have superscripts that aren't formatted to monospace
                 return first_index + check_backticks(i, text)
+
+    # If the characters aren't found, return the length of the string
+    # This should never happen
+    # This is just here to satisfy the type checking
+    return len(text)
 
 
 # A function to check the number of backticks to make sure the message sent does not exceed 100 monospace formatted parts
@@ -1084,28 +1099,28 @@ def remove_from_db(message_id: int) -> None:
     db["subbed"] = [sub for sub in db["subbed"] if sub != message_id]
 
     # Change the message ID into a string
-    message_id = str(message_id)
+    message_id_str = str(message_id)
 
     # Gets the dictionary containing the bible version for each chat
     chats_version = db["chats_version"]
 
     # Removes the chat ID from the dictionary if it exists
-    if message_id in chats_version:
-        del chats_version[message_id]
+    if message_id_str in chats_version:
+        del chats_version[message_id_str]
 
     # Sets the dictionary in the database to the new one with the chat ID removed
     db["chats_version"] = chats_version
 
 
 # The function to use in place of bot.send_message() to force the bot to send a message even if the connection is lost or an error occurs while sending the message
-def send_message(message_id: int, bot_message: str, **kwargs) -> None:
+def send_message(message_id: int, bot_message: str, message_thread_id: Optional[int] = None, **kwargs) -> None:
 
     # While the message is not sent successfully
     while True:
         try:
 
             # Sends the message
-            bot.send_message(message_id, bot_message, **kwargs)
+            bot.send_message(message_id, bot_message, message_thread_id=message_thread_id, **kwargs)
 
             # Breaks the loop if the message is sent successfully
             break
@@ -1114,6 +1129,7 @@ def send_message(message_id: int, bot_message: str, **kwargs) -> None:
         except Exception as e:
             
             # Checks if the error is a Telegram API exception
+            # And the error is one of those in the set
             if isinstance(e, ApiTelegramException):
 
                 # Checks if the error is one of those in the set
@@ -1153,7 +1169,7 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
         except Exception as e:
 
             # If the error is one of those in the set
-            if e.description in ERRORS_TO_BREAK_ON:
+            if isinstance(e, ApiTelegramException) and e.description in ERRORS_TO_BREAK_ON:
                 
                 # Remove the user from the database
                 remove_from_db(message.chat.id)
@@ -1230,7 +1246,7 @@ def keep_bot_alive() -> None:
             try:
 
                 # Gets the bot url
-                s.get("https://bible-verses-bot-8u5d.onrender.com")
+                s.get("https://bible-verses-bot-paop.onrender.com/")
 
                 # Breaks the loop if its successful
                 break
