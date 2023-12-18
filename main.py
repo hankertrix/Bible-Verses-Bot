@@ -41,6 +41,7 @@ ERRORS_TO_BREAK_ON = {
     "Forbidden: user is deactivated",
     "Forbidden: bot was kicked from the channel chat",
     "Forbidden: bot is not a member of the channel chat",
+    "Bad Request: message thread not found",
 }
 
 # Sets the timezone to Singapore's timezone
