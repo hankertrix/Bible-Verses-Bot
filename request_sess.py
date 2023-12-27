@@ -4,7 +4,7 @@ import httpx
 
 # Request headers
 headers = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.3",
   "Accept-Language": "en-US,en;q=0.9",
   "DNT": "1",
   "Referer": "https://www.google.com/"
