@@ -45,8 +45,13 @@ class Database(abc.MutableMapping):
         # Checks if the dictionary of the database is not given
         if dic is None:
 
+            # Gets the value from the database
+            value = db.reference(reference_str).get()
+
             # Sets the dictionary to the value obtained from the database
-            self.dic = db.reference(reference_str).get()
+            # if the value isn't None.
+            # Otherwise, set the value to be an empty dictionary
+            self.dic = value if value is not None else {}
 
         # Otherwise, set the dictionary to the value given
         else:
