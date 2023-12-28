@@ -56,18 +56,19 @@ class Database(abc.MutableMapping):
         return str(self.dic)
 
     def __getitem__(self, key: str) -> Any:
-        "Gets a value for a key in the database."
+        """
+        Gets a value for a key in the database.
+
+        If there is no value found, returns an instance of a database,
+        which is similar to a Python dictionary.
+        """
 
         # Gets the value from the dictionary in-memory
         # This should be in sync with the database
         value = self.dic.get(key)
 
-        # If the value is empty, raise a key error
-        if not value:
-            raise KeyError(key)
-
-        # If the value is a dictionary
-        if isinstance(value, abc.Mapping):
+        # If the value is empty or is a dictionary
+        if not value or isinstance(value, abc.Mapping):
 
             # Returns another instance of the database object
             # with the reference string set to the current
