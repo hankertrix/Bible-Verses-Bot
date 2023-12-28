@@ -64,16 +64,20 @@ class Database(abc.MutableMapping):
         """
         Gets a value for a key in the database.
 
-        If there is no value found, returns an instance of a database,
-        which is similar to a Python dictionary.
+        If there is no value found, raises a KeyError,
+        just like a Python dictionary.
         """
 
         # Gets the value from the dictionary in-memory
         # This should be in sync with the database
         value = self.dic.get(key)
 
-        # If the value is empty or is a dictionary
-        if not value or isinstance(value, abc.Mapping):
+        # If no value is found, raise a KeyError
+        if not value:
+            raise KeyError
+
+        # If the value is a dictionary
+        if isinstance(value, abc.Mapping):
 
             # Returns another instance of the database object
             # with the reference string set to the current
