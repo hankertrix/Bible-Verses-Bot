@@ -23,8 +23,32 @@ firebase_keys = {
 # Change the firebase keys into credentials
 creds = credentials.Certificate(firebase_keys)
 
+# The dictionary mapping illegal characters
+# to legal characters
+illegal_to_legal_char_dict = {
+    "/": "∕",
+    ".": "․",
+    "$": "＄",
+    "#": "＃",
+    "[": "⦋",
+    "]": "⦌",
+}
+
 # Initialise the application
 initialize_app(creds, {"databaseURL": os.environ["FIREBASE_DB_URL"]})
+
+
+def replace_illegal_with_legal_char(string: str) -> str:
+    """
+    The function to replace all the illegal characters
+    with legal characters for firebase.
+    """
+
+    # Replace the illegal characters in the string with legal ones
+    # and return the string
+    return "".join(
+        illegal_to_legal_char_dict.get(char, char) for char in string
+    )
 
 
 class Database(abc.MutableMapping):
@@ -68,6 +92,9 @@ class Database(abc.MutableMapping):
         just like a Python dictionary.
         """
 
+        # Replace all illegal characters in the key
+        key = replace_illegal_with_legal_char(key)
+
         # Gets the value from the dictionary in-memory
         # This should be in sync with the database
         value = self.dic.get(key)
@@ -91,6 +118,9 @@ class Database(abc.MutableMapping):
 
     def __setitem__(self, key: str, value: Any) -> None:
         "Sets a value for a key in the database."
+
+        # Replace all illegal characters in the key
+        key = replace_illegal_with_legal_char(key)
 
         # Sets the value in the in-memory dictionary
         self.dic[key] = value
