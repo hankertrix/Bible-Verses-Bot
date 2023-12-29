@@ -1034,7 +1034,8 @@ def check_full_chapt_chapter(message: str) -> bool:
 # Split a long message into different messages
 def split_message(
     message: types.Message,
-    text: str, max_len: int = 4096,
+    text: str,
+    max_len: int = 4096,
     **kwargs
 ) -> None:
 
@@ -1201,7 +1202,8 @@ def send_message(
                 bot.send_message(
                     message.chat.id,
                     bot_message,
-                    message_thread_id=message.message_thread_id
+                    message_thread_id=message.message_thread_id,
+                    **kwargs
                 )
 
                 # Sets the chat ID to the one given by the message
