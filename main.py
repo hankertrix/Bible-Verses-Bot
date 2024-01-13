@@ -1330,13 +1330,43 @@ def test() -> None:
     time.sleep(10)
 
 
+# The list of commands to send to botfather
+@bot.message_handler(commands=["commands", "command"])
+def command_handler(message: types.Message) -> None:
+
+    # If the user sending the command is not the developer,
+    # exit the function
+    if message.chat.id != int(os.environ["DEV_ID"]):
+        return
+
+    # Otherwise, create the list of commands
+    commands_list = [
+        "start - Start the bot and provides a brief description of what the bot can do."
+        "help - Display information about how to use the bot.",
+        "verse - Send your bible verse after sending this command and the bot will reply back with the full verse.",
+        "version - Display the current bible version.",
+        "setversion - Change the bible version.",
+        "listversions - List the bible versions accepted by the bot.",
+        "verseoftheday - Get the bot to send you the verse of the day daily.",
+        "votd - Shortcut for the /verseoftheday command.",
+        "stopverseoftheday - Stop the bot from sending you the verse of the day daily.",
+        "svotd - Shortcut for the /stopverseoftheday command."
+    ]
+
+    # Sends the list fo commands to the user
+    send_message("\n".join(commands_list), message)
+
+
 # For debugging purposes
 @bot.message_handler(commands=["debug"])
 def debug(message: types.Message) -> None:
 
+    # If the user sending the command is not the developer,
+    # exit the function
     if message.chat.id != int(os.environ["DEV_ID"]):
         return
 
+    # The debug message
     msg = f'db["subbed"] = {db["subbed"]}\n\ndb["chats_version"] = {db["chats_version"]}\n\ndb["previous_sent_time"] = {repr(db["previous_sent_time"])}'
     split_message(message, msg)
 
