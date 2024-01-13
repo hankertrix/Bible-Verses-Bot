@@ -1341,15 +1341,15 @@ def command_handler(message: types.Message) -> None:
 
     # Otherwise, create the list of commands
     commands_list = [
-        "start - Start the bot and provides a brief description of what the bot can do."
-        "help - Display information about how to use the bot.",
+        "start - Starts the bot and provides a brief description of what the bot can do."
+        "help - Shows information on how to use the bot.",
         "verse - Send your bible verse after sending this command and the bot will reply back with the full verse.",
-        "version - Display the current bible version.",
-        "setversion - Change the bible version.",
-        "listversions - List the bible versions accepted by the bot.",
-        "verseoftheday - Get the bot to send you the verse of the day daily.",
+        "version - Displays the current bible version.",
+        "setversion - Changes the bible version.",
+        "listversions - Lists the bible versions accepted by the bot.",
+        "verseoftheday - Gets the bot to send you the verse of the day daily.",
         "votd - Shortcut for the /verseoftheday command.",
-        "stopverseoftheday - Stop the bot from sending you the verse of the day daily.",
+        "stopverseoftheday - Stops the bot from sending you the verse of the day daily.",
         "svotd - Shortcut for the /stopverseoftheday command."
     ]
 
