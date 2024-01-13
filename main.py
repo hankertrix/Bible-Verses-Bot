@@ -1341,7 +1341,7 @@ def command_handler(message: types.Message) -> None:
 
     # Otherwise, create the list of commands
     commands_list = [
-        "start - Starts the bot and provides a brief description of what the bot can do."
+        "start - Starts the bot and provides a brief description of what the bot can do.",
         "help - Shows information on how to use the bot.",
         "verse - Send your bible verse after sending this command and the bot will reply back with the full verse.",
         "version - Displays the current bible version.",
