@@ -1263,12 +1263,12 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytelegrambotapi"
-version = "4.15.2"
+version = "4.15.3"
 description = "Python Telegram bot api."
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyTelegramBotAPI-4.15.2.tar.gz", hash = "sha256:fba878ff9530841c8c68c728cef1c2588b470608310e085d8c56ed035ab53cd4"},
+    {file = "pyTelegramBotAPI-4.15.3.tar.gz", hash = "sha256:446d6f8c578e49036a9da430dcf76b0adebd706edf3922d092e0304eacae6bd9"},
 ]
 
 [package.dependencies]
