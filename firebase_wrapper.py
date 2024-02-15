@@ -132,7 +132,7 @@ class Database(abc.MutableMapping):
         "Deletes a key from the database."
 
         # Deletes the item from the in-memory dictionary
-        self.dic.popitem(key)
+        self.dic.pop(key)
 
         # Deletes the item from the database
         self.db.reference(f"{self.reference_str}/{key}").delete()
