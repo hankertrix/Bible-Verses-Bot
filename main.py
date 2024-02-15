@@ -450,9 +450,6 @@ def set_version(message: types.Message, ctx: str = "") -> None:
         # Sends the message
         reply_to(message, invalid_msg)
 
-    # Finally, set the version list in the database to the updated one
-    db["chats_version"] = version_dict
-
     # Removes the next step handler
     handler.clear_step_handler("setversion", message)
 
@@ -1165,9 +1162,6 @@ def remove_from_db(message_id: int | str | None) -> None:
     # Removes the chat ID from the dictionary if it exists
     if message_id_str in chats_version:
         del chats_version[message_id_str]
-
-    # Sets the dictionary in the database to the new one with the chat ID removed
-    db["chats_version"] = chats_version
 
 
 # The function to use in place of bot.send_message() to force the bot
