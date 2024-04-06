@@ -493,13 +493,13 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0.dev0)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.124.0"
+version = "2.125.0"
 description = "Google API Client Library for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-api-python-client-2.124.0.tar.gz", hash = "sha256:f6d3258420f7c76b0f5266b5e402e6f804e30351b018a10083f4a46c3ec33773"},
-    {file = "google_api_python_client-2.124.0-py2.py3-none-any.whl", hash = "sha256:07dc674449ed353704b1169fdee792f74438d024261dad71b6ce7bb9c683d51f"},
+    {file = "google-api-python-client-2.125.0.tar.gz", hash = "sha256:51a0385cff65ec135106e8be60ee7112557396dde5f44113ae23912baddda143"},
+    {file = "google_api_python_client-2.125.0-py2.py3-none-any.whl", hash = "sha256:0a62b60fbd61b61a455f15d925264b3301099b67cafd2d33cf8bf151f1fca4f4"},
 ]
 
 [package.dependencies]
@@ -567,17 +567,18 @@ grpc = ["grpcio (>=1.38.0,<2.0dev)", "grpcio-status (>=1.38.0,<2.0.dev0)"]
 
 [[package]]
 name = "google-cloud-firestore"
-version = "2.15.0"
+version = "2.16.0"
 description = "Google Cloud Firestore API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-firestore-2.15.0.tar.gz", hash = "sha256:589ce49c6b8d7315a248327e4a124a44143f5a5314ea768f7c851660c21e6321"},
-    {file = "google_cloud_firestore-2.15.0-py2.py3-none-any.whl", hash = "sha256:71b1b32c11e7cb2fa804037865619930655409a49238807a88c244510e5d21c7"},
+    {file = "google-cloud-firestore-2.16.0.tar.gz", hash = "sha256:e61ae70229a6e532e439c8d16447a32024447f2ee4a2303fc4d054c258d6877f"},
+    {file = "google_cloud_firestore-2.16.0-py2.py3-none-any.whl", hash = "sha256:3347ac38346c2702134d4c81f652a5e3451c840a6237f28b844501bd528e5fd8"},
 ]
 
 [package.dependencies]
 google-api-core = {version = ">=1.34.0,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
+google-auth = ">=2.14.1,<2.24.0 || >2.24.0,<2.25.0 || >2.25.0,<3.0.0dev"
 google-cloud-core = ">=1.4.1,<3.0.0dev"
 proto-plus = [
     {version = ">=1.22.2,<2.0.0dev", markers = "python_version >= \"3.11\""},
@@ -1348,13 +1349,13 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.10.0"
+version = "4.11.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.10.0-py3-none-any.whl", hash = "sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475"},
-    {file = "typing_extensions-4.10.0.tar.gz", hash = "sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb"},
+    {file = "typing_extensions-4.11.0-py3-none-any.whl", hash = "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"},
+    {file = "typing_extensions-4.11.0.tar.gz", hash = "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0"},
 ]
 
 [[package]]
@@ -1402,13 +1403,13 @@ testing = ["coverage (>=5.0)", "pytest", "pytest-cover"]
 
 [[package]]
 name = "werkzeug"
-version = "3.0.1"
+version = "3.0.2"
 description = "The comprehensive WSGI web application library."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "werkzeug-3.0.1-py3-none-any.whl", hash = "sha256:90a285dc0e42ad56b34e696398b8122ee4c681833fb35b8334a095d82c56da10"},
-    {file = "werkzeug-3.0.1.tar.gz", hash = "sha256:507e811ecea72b18a404947aded4b3390e1db8f826b494d76550ef45bb3b1dcc"},
+    {file = "werkzeug-3.0.2-py3-none-any.whl", hash = "sha256:3aac3f5da756f93030740bc235d3e09449efcf65f2f55e3602e1d851b8f48795"},
+    {file = "werkzeug-3.0.2.tar.gz", hash = "sha256:e39b645a6ac92822588e7b39a692e7828724ceae0b0d702ef96701f90e70128d"},
 ]
 
 [package.dependencies]
