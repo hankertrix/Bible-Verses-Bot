@@ -35,8 +35,10 @@ from request_sess import s
 ERRORS_TO_BREAK_ON = {
     "Bad Request: chat not found",
     "Bad Request: replied message not found",
+    "Bad Request: message to reply not found",
     "Bad Request: group chat was upgraded to a supergroup chat",
     "Bad Request: need administrator rights in the channel chat",
+    "Bad Request: CHAT_RESTRICTED",
     "Bad Request: TOPIC_CLOSED",
     "Bad Request: message thread not found",
     "Bad Request: not enough rights to send text messages to the chat",
