@@ -157,8 +157,8 @@ class Database(abc.MutableMapping):
         # Returns all the keys
         return self.dic.keys()
 
-    def update_db(self) -> None:
-        "Updates the in-memory database with new data."
+    def sync_db(self) -> None:
+        "Sync the in-memory database with the database."
 
         # Gets the new data from the database
         # And sets it to the dic property
