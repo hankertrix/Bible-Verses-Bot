@@ -1089,14 +1089,9 @@ def split_message(
 
     # Iterates the list of the parts of the message
     for index, part in enumerate(splitted_list):
-
-        # Makes the first message a reply to the user's message
-        if index == 0:
-            reply_to(message, part, **kwargs)
-
-        # All other messages after the first is sent as a normal message
-        else:
-            send_message(part, message, **kwargs)
+        
+        # Reply to the original message sent by the user
+        reply_to(message, part, **kwargs)
 
 
 # Iterates the parts of the long message backwards to find the newline character
