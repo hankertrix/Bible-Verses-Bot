@@ -511,13 +511,13 @@ uritemplate = ">=3.0.1,<5"
 
 [[package]]
 name = "google-auth"
-version = "2.29.0"
+version = "2.30.0"
 description = "Google Authentication Library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-auth-2.29.0.tar.gz", hash = "sha256:672dff332d073227550ffc7457868ac4218d6c500b155fe6cc17d2b13602c360"},
-    {file = "google_auth-2.29.0-py2.py3-none-any.whl", hash = "sha256:d452ad095688cd52bae0ad6fafe027f6a6d6f560e810fec20914e17a09526415"},
+    {file = "google-auth-2.30.0.tar.gz", hash = "sha256:ab630a1320f6720909ad76a7dbdb6841cdf5c66b328d690027e4867bdfb16688"},
+    {file = "google_auth-2.30.0-py2.py3-none-any.whl", hash = "sha256:8df7da660f62757388b8a7f249df13549b3373f24388cb5d2f1dd91cc18180b5"},
 ]
 
 [package.dependencies]
@@ -1308,13 +1308,13 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytelegrambotapi"
-version = "4.18.1"
+version = "4.19.0"
 description = "Python Telegram bot api."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytelegrambotapi-4.18.1-py3-none-any.whl", hash = "sha256:07951383c5831b1f810edaf01e06ee95a40253486d725780cf88de15aa0893ce"},
-    {file = "pytelegrambotapi-4.18.1.tar.gz", hash = "sha256:6bf79a726624441e84724d933312edb3138ad22906ffea2fee09ee6846236ac0"},
+    {file = "pytelegrambotapi-4.19.0-py3-none-any.whl", hash = "sha256:9416a36ad8aad78ca8a3962e184a287bb5e299bc24082e350a4c691f99f608fc"},
+    {file = "pytelegrambotapi-4.19.0.tar.gz", hash = "sha256:a8507a39892c635d605ae19adb247be645e7efb59986684d648f04aaeff6ea88"},
 ]
 
 [package.dependencies]
