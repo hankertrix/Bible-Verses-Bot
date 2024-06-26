@@ -217,7 +217,7 @@ class MessageMatch:
             # Returns a tuple of the match and an empty string
             return (match, "")
 
-        # Otherwise, temove the version from the match
+        # Otherwise, remove the version from the match
         match = regex.sub("", match).strip()
 
         # Gets the bible version
@@ -259,10 +259,10 @@ class MessageMatch:
         # Iterates the list of matches
         for verse in verses_list:
 
-            # Checks if the item in the list contains a semicolon
+            # Checks if the item in the list contains a colon
             if ":" in verse:
 
-                # Splits the item in the list using the semicolon
+                # Splits the item in the list using the colon
                 verse_list = verse.split(":")
 
                 # Assigns the default chapter to the first number of the list
@@ -271,10 +271,54 @@ class MessageMatch:
                 # Splits the message like a normal number bible verse to get the bible chapter, the starting and ending verse
                 match_list = verse.replace(":", "-").split("-")
 
-                # Adds the match list and the match index to the object list
-                self.add_to_lists(book_code, current_index, match_list, bible_version)
+                # If the match list has less than or equal to 3 items
+                if len(match_list) <= 3:
 
-            # If there is no semicolon
+                    # Adds the match list and the match index to the object list
+                    self.add_to_lists(book_code, current_index, match_list, bible_version)
+
+                # Otherwise, if match list has more than 3 items,
+                # that means that the range is given in the form:
+                # Gen 21:1 - 22:21-23
+                else:
+
+                    # Gets the first chapter, which is the first item
+                    first_chapter = int(match_list[0])
+
+                    # Gets the second chapter, which is the third item
+                    second_chapter = int(match_list[2])
+
+                    # Add the first chapter to the list,
+                    # with the verse starting at the verse given
+                    self.add_to_lists(
+                        book_code,
+                        current_index,
+                        [first_chapter, match_list[1], 176],
+                        bible_version
+                    )
+
+                    # Iterates from the chapter after the first chapter
+                    # to the chapter right before the second chapter
+                    for chapter_num in range(first_chapter + 1, second_chapter):
+
+                        # Add the entire chapter to the list
+                        self.add_to_lists(
+                            book_code,
+                            current_index,
+                            [chapter_num, 1, 176],
+                            bible_version
+                        )
+
+                    # Adds the second chapter to the list
+                    # with the verse ending at the verse given
+                    self.add_to_lists(
+                        book_code,
+                        current_index,
+                        [second_chapter, 1, match_list[3]],
+                        bible_version
+                    )
+
+            # If there is no colon
             else:
 
                 # Splits the message using a dash
@@ -324,7 +368,7 @@ class MessageMatch:
         book_code = bible_dict[book_title]
 
         # If there are multiple bible verses
-        if "," in match:
+        if "," in match or ";" in match:
             self.multi_num_convert(book_code, match_index, match)
 
         # Single bible verse
