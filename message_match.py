@@ -282,6 +282,8 @@ class MessageMatch:
                 # Gen 21:1 - 22:21-23
                 else:
 
+                    print(match_list)
+
                     # Gets the first chapter, which is the first item
                     first_chapter = int(match_list[0])
 
@@ -317,6 +319,11 @@ class MessageMatch:
                         [second_chapter, 1, match_list[3]],
                         bible_version
                     )
+
+                    print("Second chapter added")
+
+                    # Set the default chapter
+                    default_chapter = second_chapter
 
             # If there is no colon
             else:
