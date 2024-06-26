@@ -282,8 +282,6 @@ class MessageMatch:
                 # Gen 21:1 - 22:21-23
                 else:
 
-                    print(match_list)
-
                     # Gets the first chapter, which is the first item
                     first_chapter = int(match_list[0])
 
@@ -303,6 +301,9 @@ class MessageMatch:
                     # to the chapter right before the second chapter
                     for chapter_num in range(first_chapter + 1, second_chapter):
 
+                        # Increment the current index by 1
+                        current_index += 1
+
                         # Add the entire chapter to the list
                         self.add_to_lists(
                             book_code,
@@ -310,6 +311,9 @@ class MessageMatch:
                             [chapter_num, 1, 176],
                             bible_version
                         )
+
+                    # Increment the current index by 1
+                    current_index += 1
 
                     # Adds the second chapter to the list
                     # with the verse ending at the verse given
@@ -320,9 +324,7 @@ class MessageMatch:
                         bible_version
                     )
 
-                    print("Second chapter added")
-
-                    # Set the default chapter
+                    # Set the default chapter to the second chapter
                     default_chapter = second_chapter
 
             # If there is no colon
@@ -358,8 +360,61 @@ class MessageMatch:
         # The list containing the bible chapter and the bible verse
         match_list = match_no_dash.replace(":", " ").split()
 
-        # Adds the match list and the match index to the object list
-        self.add_to_lists(book_code, match_index, match_list, bible_version)
+        # Initialise the current index to the match index
+        current_index = match_index
+
+        # If the match list has less than or equal to 3 items
+        if len(match_list) <= 3:
+
+            # Adds the match list and the match index to the object list
+            self.add_to_lists(book_code, current_index, match_list, bible_version)
+
+        # Otherwise, if match list has more than 3 items,
+        # that means that the range is given in the form:
+        # Gen 21:1 - 22:21-23
+        else:
+
+            # Gets the first chapter, which is the first item
+            first_chapter = int(match_list[0])
+
+            # Gets the second chapter, which is the third item
+            second_chapter = int(match_list[2])
+
+            # Add the first chapter to the list,
+            # with the verse starting at the verse given
+            self.add_to_lists(
+                book_code,
+                current_index,
+                [first_chapter, match_list[1], 176],
+                bible_version
+            )
+
+            # Iterates from the chapter after the first chapter
+            # to the chapter right before the second chapter
+            for chapter_num in range(first_chapter + 1, second_chapter):
+
+                # Increment the current index by 1
+                current_index += 1
+
+                # Add the entire chapter to the list
+                self.add_to_lists(
+                    book_code,
+                    current_index,
+                    [chapter_num, 1, 176],
+                    bible_version
+                )
+
+            # Increment the current index by 1
+            current_index += 1
+
+            # Adds the second chapter to the list
+            # with the verse ending at the verse given
+            self.add_to_lists(
+                book_code,
+                current_index,
+                [second_chapter, 1, match_list[3]],
+                bible_version
+            )
 
     # The converter to decide if the number portion has multiple verses and passes the information to the respective convert functions
     def num_converter(self, match_index: int, match: str) -> None:
