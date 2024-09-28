@@ -2,13 +2,13 @@
 
 [[package]]
 name = "anyio"
-version = "4.5.0"
+version = "4.6.0"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "anyio-4.5.0-py3-none-any.whl", hash = "sha256:fdeb095b7cc5a5563175eedd926ec4ae55413bb4be5770c424af0ba46ccb4a78"},
-    {file = "anyio-4.5.0.tar.gz", hash = "sha256:c5a275fe5ca0afd788001f58fca1e69e29ce706d746e317d660e21f70c530ef9"},
+    {file = "anyio-4.6.0-py3-none-any.whl", hash = "sha256:c7d2e9d63e31599eeb636c8c5c03a7e108d73b345f064f1c19fdc87b79036a9a"},
+    {file = "anyio-4.6.0.tar.gz", hash = "sha256:137b4559cbb034c477165047febb6ff83f390fc3b20bf181c1fc0a728cb8beeb"},
 ]
 
 [package.dependencies]
@@ -511,13 +511,13 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0.dev0)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.146.0"
+version = "2.147.0"
 description = "Google API Client Library for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google_api_python_client-2.146.0-py2.py3-none-any.whl", hash = "sha256:b1e62c9889c5ef6022f11d30d7ef23dc55100300f0e8aaf8aa09e8e92540acad"},
-    {file = "google_api_python_client-2.146.0.tar.gz", hash = "sha256:41f671be10fa077ee5143ee9f0903c14006d39dc644564f4e044ae96b380bf68"},
+    {file = "google_api_python_client-2.147.0-py2.py3-none-any.whl", hash = "sha256:c6ecfa193c695baa41e84562d8f8f244fcd164419eca3fc9fd7565646668f9b2"},
+    {file = "google_api_python_client-2.147.0.tar.gz", hash = "sha256:e864c2cf61d34c00f05278b8bdb72b93b6fa34f0de9ead51d20435f3b65f91be"},
 ]
 
 [package.dependencies]
@@ -585,13 +585,13 @@ grpc = ["grpcio (>=1.38.0,<2.0dev)", "grpcio-status (>=1.38.0,<2.0.dev0)"]
 
 [[package]]
 name = "google-cloud-firestore"
-version = "2.18.0"
+version = "2.19.0"
 description = "Google Cloud Firestore API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google_cloud_firestore-2.18.0-py2.py3-none-any.whl", hash = "sha256:9a735860b692f39f93f900dd3390713ceb9b47ea82cda98360bb551f03d2b916"},
-    {file = "google_cloud_firestore-2.18.0.tar.gz", hash = "sha256:3db5dd42334b9904d82b3786703a5a4b576810fb50f61b8fa83ecf4f17b7fdae"},
+    {file = "google_cloud_firestore-2.19.0-py2.py3-none-any.whl", hash = "sha256:b49f0019d7bd0d4ab5972a4cff13994b0aabe72d24242200d904db2fb49df7f7"},
+    {file = "google_cloud_firestore-2.19.0.tar.gz", hash = "sha256:1b2ce6e0b791aee89a1e4f072beba1012247e89baca361eed721fb467fe054b0"},
 ]
 
 [package.dependencies]
@@ -1293,12 +1293,13 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytelegrambotapi"
-version = "4.22.1"
+version = "4.23.0"
 description = "Python Telegram bot api."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytelegrambotapi-4.22.1-py3-none-any.whl", hash = "sha256:58a4bc11b054683ba4ef43452e125c80786bbeffd1ba08dfa45291f56e5d08c4"},
+    {file = "pytelegrambotapi-4.23.0-py3-none-any.whl", hash = "sha256:4fd4a64f3d5ec389270cf4f1eacd68f6d25d199e1048b76a1caefcb17fbe214b"},
+    {file = "pytelegrambotapi-4.23.0.tar.gz", hash = "sha256:ced74787cfaf59d959799786f12a401cdb3abeb58dcd25568fc91363ba1cccfa"},
 ]
 
 [package.dependencies]
