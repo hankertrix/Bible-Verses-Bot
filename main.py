@@ -36,6 +36,7 @@ ERRORS_TO_BREAK_ON = {
     "Bad Request: chat not found",
     "Bad Request: replied message not found",
     "Bad Request: message to reply not found",
+    "Bad Request: message to be replied not found",
     "Bad Request: group chat was upgraded to a supergroup chat",
     "Bad Request: need administrator rights in the channel chat",
     "Bad Request: CHAT_RESTRICTED",
@@ -48,6 +49,7 @@ ERRORS_TO_BREAK_ON = {
     "Forbidden: user is deactivated",
     "Forbidden: bot was kicked from the channel chat",
     "Forbidden: bot is not a member of the channel chat",
+    "Forbidden: the group chat was deleted",
 }
 
 # Sets the timezone to Singapore's timezone
@@ -57,7 +59,8 @@ time.tzset()
 
 # Logging configuration
 logging.basicConfig(
-    format='%(levelname)s: %(asctime)s - %(message)s', level=logging.DEBUG)
+    format="%(levelname)s: %(asctime)s - %(message)s", level=logging.DEBUG
+)
 # logging.disable("CRITICAL")
 
 # Disable the logging for httpcore
@@ -114,7 +117,12 @@ class TimeCheck(threading.Thread):
             # if current_time.minute == 0:
 
             # Checks if the time of the day is the time to send out the verse of the day and the previous sent time is a day ago
-            if (current_time.hour, current_time.minute) == (verse_of_the_day_time[0], verse_of_the_day_time[1]) and current_time.day != datetime.datetime.fromisoformat(db["previous_sent_time"]).day:
+            if (current_time.hour, current_time.minute) == (
+                verse_of_the_day_time[0],
+                verse_of_the_day_time[1],
+            ) and current_time.day != datetime.datetime.fromisoformat(
+                db["previous_sent_time"]
+            ).day:
 
                 # Calls the function to send the verse of the day message
                 asyncio.run(send_verse_of_the_day())
@@ -129,7 +137,13 @@ class TimeCheck(threading.Thread):
                 current_time = datetime.datetime.now()
 
                 # Checks if the previous sent time was one day ago and the current time is after 12pm
-                if datetime.datetime.fromisoformat(db["previous_sent_time"]).day != current_time.day and current_time.hour >= verse_of_the_day_time[0]:
+                if (
+                    datetime.datetime.fromisoformat(
+                        db["previous_sent_time"]
+                    ).day
+                    != current_time.day
+                    and current_time.hour >= verse_of_the_day_time[0]
+                ):
 
                     # Pauses the program for 10 seconds to avoid errors
                     time.sleep(10)
@@ -138,14 +152,21 @@ class TimeCheck(threading.Thread):
                     asyncio.run(send_verse_of_the_day())
 
                     # Set the previous sent time to the current time
-                    db["previous_sent_time"] = datetime.datetime.now().isoformat()
+                    db["previous_sent_time"] = (
+                        datetime.datetime.now().isoformat()
+                    )
 
                 # The time now
                 now = datetime.datetime.now()
 
                 # The time that the verse of the day is supposed to be sent
                 next_time = datetime.datetime(
-                    year=now.year, month=now.month, day=now.day, hour=verse_of_the_day_time[0], minute=verse_of_the_day_time[1])
+                    year=now.year,
+                    month=now.month,
+                    day=now.day,
+                    hour=verse_of_the_day_time[0],
+                    minute=verse_of_the_day_time[1],
+                )
 
                 # For testing purposes
                 # next_time = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour)
@@ -156,7 +177,7 @@ class TimeCheck(threading.Thread):
                 if next_time > now:
 
                     # Pauses the execution until the current day's 12pm
-                    trusty_sleep((next_time-now).seconds)
+                    trusty_sleep((next_time - now).seconds)
 
                     # Pauses the program for one second so that it doesn't miss the timing to send the verse of the day
                     time.sleep(1)
@@ -173,7 +194,7 @@ class TimeCheck(threading.Thread):
                     logging.info(f"Edited next_time is {next_time}")
 
                     # Pauses the execution until the next day's 12pm
-                    trusty_sleep((next_time-now).seconds)
+                    trusty_sleep((next_time - now).seconds)
 
                     # Pauses the program for one second so that it doesn't miss the timing to send the verse of the day
                     time.sleep(1)
@@ -183,7 +204,9 @@ class TimeCheck(threading.Thread):
 def debounce_inline_query(duration: float) -> Callable:
 
     # The decorator within to decorate the inline query handler with the debounce
-    def decorator(inline_query_handler: Callable[[types.InlineQuery], None]) -> Callable[[types.InlineQuery], None]:
+    def decorator(
+        inline_query_handler: Callable[[types.InlineQuery], None]
+    ) -> Callable[[types.InlineQuery], None]:
 
         # The dictionary of inline queries from different users
         inline_query_dict: Dict[Union[int, str], threading.Timer] = {}
@@ -216,7 +239,8 @@ def debounce_inline_query(duration: float) -> Callable:
 
             # Add the handler for this inline query to the dictionary
             inline_query_dict[user_id] = threading.Timer(
-                duration, call_handler, [user_id])
+                duration, call_handler, [user_id]
+            )
 
             # Starts the timer
             inline_query_dict[user_id].start()
@@ -234,7 +258,7 @@ def debounce_inline_query(duration: float) -> Callable:
 def inline_handler(inline_query: types.InlineQuery) -> None:
 
     # Calls the answer function using a thread
-    threading.Thread(target=inline_answer, args=(inline_query, )).start()
+    threading.Thread(target=inline_answer, args=(inline_query,)).start()
 
 
 # Function to respond to the inline query
@@ -255,9 +279,10 @@ def inline_answer(inline_query: types.InlineQuery) -> None:
                     "Message is too long, try searching for a shorter verse.",
                     "Message is too long, try searching for a shorter verse.",
                     types.InputTextMessageContent(
-                        "Sorry, the requested verse was too long to be sent.")
+                        "Sorry, the requested verse was too long to be sent."
+                    ),
                 )
-            ]
+            ],
         )
 
     # If the verse is not too long
@@ -274,10 +299,9 @@ def inline_answer(inline_query: types.InlineQuery) -> None:
                 types.InlineQueryResultArticle(
                     verse_title,
                     verse_title,
-                    types.InputTextMessageContent(
-                        verse, parse_mode="markdown")
+                    types.InputTextMessageContent(verse, parse_mode="markdown"),
                 )
-            ]
+            ],
         )
 
 
@@ -286,13 +310,13 @@ def inline_answer(inline_query: types.InlineQuery) -> None:
 @bot.message_handler(commands=["start"])
 def start_handler(message: types.Message) -> None:
 
-    start_msg = '''Hello! Add this bot to your Christian group chats and any bible verses shared to the group will be automatically detected by the bot and displayed as a reply to the message with the bible verse.
+    start_msg = """Hello! Add this bot to your Christian group chats and any bible verses shared to the group will be automatically detected by the bot and displayed as a reply to the message with the bible verse.
 You can also subscribe to the verse of the day in your group chat or through the messaging the bot with the /verseoftheday command.
 To unsubscribe from the verse of the day, use the /stopverseoftheday command.
 Use inline mode by tagging the bot, @bible_verses_bot, and then typing your desired verse to send the entire verse to your chat.
 To see more information about the bot, use the /help command.
 
-Hopefully this bot will help you in your journey with God!'''
+Hopefully this bot will help you in your journey with God!"""
 
     send_message(start_msg, message)
 
@@ -302,14 +326,14 @@ Hopefully this bot will help you in your journey with God!'''
 @bot.message_handler(commands=["help"])
 def help_handler(message: types.Message) -> None:
 
-    help_msg = '''To use this bot, add the bot to a group and any bible verses shared to the group will be automatically detected and displayed as a separate message.
+    help_msg = """To use this bot, add the bot to a group and any bible verses shared to the group will be automatically detected and displayed as a separate message.
 
 The default bible version used is the New International Version (NIV).
 
 The default bible version used to search the Apocrypha is the New Revised Standard Version Updated Edition (NRSVUE).
 
 All searches using the New Revised Standard Version (NRSV) as the bible version will be automatically changed to use the New Revised Standard Version Updated Edition (NRSVUE) as the bible version instead.
-    
+
 The bot will only detect bible verses written in these formats:
 - 1 John 1:9 NIV
 - Luke 9:1-10
@@ -336,7 +360,7 @@ You can use the /version command to see the default bible version the bot is set
 Use the /setversion command to change the default bible version.
 
 You can also use the /listversions command to see the list of bible versions you can change to.
-    
+
 The bot can also send you the verse of the day by using the /verseoftheday or the /votd command.
 The verse of the day would be sent at 12:00pm daily and it will be in the bible version that you have set for the chat. If the bible version you have set for your chat doesn't have the verse of the day, the bot will send the NIV version instead.
 
@@ -344,7 +368,7 @@ You can unsubscribe from the verse of the day using the /stopverseoftheday or th
 
 For any bug reports, enquiries or feedback, please contact @hankertrix.
 
-Hopefully you'll find this bot useful!'''
+Hopefully you'll find this bot useful!"""
 
     send_message(help_msg, message)
 
@@ -375,17 +399,17 @@ def display_version(message: types.Message) -> None:
 def handle_version(message: types.Message) -> None:
 
     # The content of the message behind the /setversion command
-    msg_ctx = re.sub("/setversion ?", "", message.text.lower()
-                     ) if message.text else ""
+    msg_ctx = (
+        re.sub("/setversion ?", "", message.text.lower())
+        if message.text
+        else ""
+    )
 
     # Checks if there is nothing behind the /setversion command
     if msg_ctx == "":
 
         # Sends the message to the user
-        send_message(
-            "Please enter your bible version.",
-            message
-        )
+        send_message("Please enter your bible version.", message)
 
         # Register the next step handler
         handler.register_next_step_handler("setversion", message)
@@ -398,8 +422,12 @@ def handle_version(message: types.Message) -> None:
 
 
 # The function to read the user's message and save the new bible version given if it's accepted
-@bot.channel_post_handler(func=lambda message: handler.check_step("setversion", message, 1))
-@bot.message_handler(func=lambda message: handler.check_step("setversion", message, 1))
+@bot.channel_post_handler(
+    func=lambda message: handler.check_step("setversion", message, 1)
+)
+@bot.message_handler(
+    func=lambda message: handler.check_step("setversion", message, 1)
+)
 def set_version(message: types.Message, ctx: str = "") -> None:
 
     # Checks if the context is not given
@@ -438,7 +466,9 @@ def set_version(message: types.Message, ctx: str = "") -> None:
             version_dict[message_id] = version_given
 
         # The message to notifiy the chat that the version has changed
-        version_changed_msg = f"The current bible version has changed to {version_given}."
+        version_changed_msg = (
+            f"The current bible version has changed to {version_given}."
+        )
 
         # Sends the message
         send_message(version_changed_msg, message)
@@ -536,8 +566,8 @@ def verse_stop(message: types.Message) -> None:
 # More reliable time.sleep() because I'm pausing the verse of the day thread execution for a long time
 def trusty_sleep(sleeptime: int) -> None:
     start = time.time()
-    while (time.time() - start < sleeptime):
-        time.sleep(sleeptime - (time.time()-start))
+    while time.time() - start < sleeptime:
+        time.sleep(sleeptime - (time.time() - start))
 
 
 # Function to get the verse of the day
@@ -553,11 +583,16 @@ async def get_verse_of_the_day(version="NIV") -> str:
         async with httpx.AsyncClient() as session:
 
             # Gets the verse of the day page from bible gateway
-            verse_of_the_day_page = await session.get(f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}")
+            verse_of_the_day_page = await session.get(
+                f"https://www.biblegateway.com/reading-plans/verse-of-the-day/next?version={version}"
+            )
 
         # Add line breaks to the end of every heading
         text = re.sub(
-            r"</h[1-6]>", lambda match: f"\n{match.group()}", verse_of_the_day_page.text)
+            r"</h[1-6]>",
+            lambda match: f"\n{match.group()}",
+            verse_of_the_day_page.text,
+        )
 
         # Replace all the backticks in the text with a different backtick so that it will not mess with the backtick used for markdown formatting in the message sent to the user
         text = text.replace("`", "\u02cb")
@@ -566,7 +601,9 @@ async def get_verse_of_the_day(version="NIV") -> str:
         soup = BeautifulSoup(text, "lxml")
 
         # Delete the footnotes and the cross references from the HTML
-        for unwanted_tag in soup.select(".passage-other-trans, .footnote, .footnotes, .crossreference, .crossrefs"):
+        for unwanted_tag in soup.select(
+            ".passage-other-trans, .footnote, .footnotes, .crossreference, .crossrefs"
+        ):
             unwanted_tag.decompose()
 
         # Convert all of the <br> tags to a span tag containing a newline character
@@ -588,12 +625,16 @@ async def get_verse_of_the_day(version="NIV") -> str:
         for verse_soup in verses_soup:
 
             # Gets the verse name from the HTML
-            verse_name = verse_soup.find(
-                "div", class_="rp-passage-display").get_text().strip()
+            verse_name = (
+                verse_soup.find("div", class_="rp-passage-display")
+                .get_text()
+                .strip()
+            )
 
             # Gets the text of the verse from the HTML
             verse_text = verse_soup.find(
-                "div", class_="rp-passage-text").get_text()
+                "div", class_="rp-passage-text"
+            ).get_text()
 
             # Adds a left to right mark in front of the verse to force all text to be displayed left to right (stops the Hebrew symbols from appearing at the end of the line instead of the start of the line in Psalms 119)
             # Also removes all the spaces after a new line character
@@ -629,9 +670,7 @@ async def send_verse_of_the_day() -> None:
 
     # An empty dictionary to add the version and their respective messages to
     # It will always contain NIV
-    verse_of_the_day_msg_dict = {
-        "NIV": ""
-    }
+    verse_of_the_day_msg_dict = {"NIV": ""}
 
     # Iterates over the list of chat IDs that have subscribed to the verse of the day
     for chat_id in subbed_list:
@@ -673,7 +712,9 @@ async def send_verse_of_the_day() -> None:
             try:
 
                 # Try getting the verse of the day for the version again
-                new_verse_of_the_day = await get_verse_of_the_day(versions[index])
+                new_verse_of_the_day = await get_verse_of_the_day(
+                    versions[index]
+                )
 
                 # Breaks the loop if getting the verse of the day is successful
                 break
@@ -689,7 +730,9 @@ async def send_verse_of_the_day() -> None:
     for index, version in enumerate(versions):
 
         # Sets the version in the dictionary to the verse of the day message
-        verse_of_the_day_msg_dict[version] = f"Today's verse is: \n\n{verses_of_the_day[index]}"
+        verse_of_the_day_msg_dict[version] = (
+            f"Today's verse is: \n\n{verses_of_the_day[index]}"
+        )
 
     # Iterates the list of chat ids that have subscribed to the verse of the day
     for chat_id in subbed_list:
@@ -703,11 +746,8 @@ async def send_verse_of_the_day() -> None:
         # Sends the verse of the day message to all of the chats using a thread
         threading.Thread(
             target=send_message,
-            args=(verse_msg, ),
-            kwargs={
-                "chat_id": chat_id,
-                "parse_mode": "markdown"
-            }
+            args=(verse_msg,),
+            kwargs={"chat_id": chat_id, "parse_mode": "markdown"},
         ).start()
 
 
@@ -778,7 +818,7 @@ def choose_version(default_version: str, bible_version: str) -> str:
 def search_verse(
     message: Union[types.Message, str] = "",
     inline_query: Union[types.InlineQuery, str] = "",
-    inline: Optional[bool] = False
+    inline: Optional[bool] = False,
 ) -> str:
 
     # For measuring performance
@@ -821,7 +861,7 @@ def search_verse(
             msg=msg,
             book=book,
             match=[chapter, start_verse, end_verse],
-            version=choose_version(default_version, version)
+            version=choose_version(default_version, version),
         )
 
         # Appends the match object to a list
@@ -843,8 +883,8 @@ def search_verse(
         obj.get_verses()
 
     # Gets the resulting string from the objects if the object is valid
-    verse_msg = "\n\n\n\n\n".join(dict.fromkeys(
-        obj.verses for obj in match_obj_list if obj.valid)
+    verse_msg = "\n\n\n\n\n".join(
+        dict.fromkeys(obj.verses for obj in match_obj_list if obj.valid)
     )
 
     # For measuring performance
@@ -857,6 +897,7 @@ def search_verse(
 
     # Returns the verse message
     return verse_msg
+
 
 # A class to handle the get_verse() function
 
@@ -886,7 +927,7 @@ class GetVerse(threading.Thread):
         # Asks the user to try again
         else:
 
-            invalid_msg = '''You have given me an invalid bible verse. Check your spelling and try again by using the /verse command.'''
+            invalid_msg = """You have given me an invalid bible verse. Check your spelling and try again by using the /verse command."""
 
             reply_to(self.message, invalid_msg)
 
@@ -897,7 +938,11 @@ class GetVerse(threading.Thread):
 def verse_handler(message: types.Message) -> None:
 
     # Removes the command from the message
-    msg = message.text.lower().replace(r"/verse", "").strip() if message.text else ""
+    msg = (
+        message.text.lower().replace(r"/verse", "").strip()
+        if message.text
+        else ""
+    )
 
     # Checks if the msg still has other words
     if msg:
@@ -919,8 +964,12 @@ def verse_handler(message: types.Message) -> None:
 
 
 # Searches for the bible verse given previously through the command /verse
-@bot.channel_post_handler(func=lambda message: handler.check_step("verse", message, 1))
-@bot.message_handler(func=lambda message: handler.check_step("verse", message, 1))
+@bot.channel_post_handler(
+    func=lambda message: handler.check_step("verse", message, 1)
+)
+@bot.message_handler(
+    func=lambda message: handler.check_step("verse", message, 1)
+)
 def get_verse(message: types.Message) -> None:
 
     # Initialises a thread from the GetVerse class
@@ -1033,10 +1082,7 @@ def check_full_chapt_chapter(message: str) -> bool:
 
 # Split a long message into different messages
 def split_message(
-    message: types.Message,
-    text: str,
-    max_len: int = 4096,
-    **kwargs
+    message: types.Message, text: str, max_len: int = 4096, **kwargs
 ) -> None:
 
     # List to append the parts of the long message
@@ -1089,7 +1135,7 @@ def split_message(
 
     # Iterates the list of the parts of the message
     for index, part in enumerate(splitted_list):
-        
+
         # Reply to the original message sent by the user
         reply_to(message, part, **kwargs)
 
@@ -1169,7 +1215,7 @@ def send_message(
     message: types.Message | None = None,
     chat_id: int | str | None = None,
     message_thread_id: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ) -> None:
 
     # While the message is not sent successfully
@@ -1184,7 +1230,7 @@ def send_message(
                     chat_id,
                     bot_message,
                     message_thread_id=message_thread_id,
-                    **kwargs
+                    **kwargs,
                 )
 
             # Otherwise
@@ -1195,7 +1241,7 @@ def send_message(
                     message.chat.id,
                     bot_message,
                     message_thread_id=message.message_thread_id,
-                    **kwargs
+                    **kwargs,
                 )
 
                 # Sets the chat ID to the one given by the message
@@ -1342,7 +1388,7 @@ def command_handler(message: types.Message) -> None:
         "verseoftheday - Gets the bot to send you the verse of the day daily.",
         "votd - Shortcut for the /verseoftheday command.",
         "stopverseoftheday - Stops the bot from sending you the verse of the day daily.",
-        "svotd - Shortcut for the /stopverseoftheday command."
+        "svotd - Shortcut for the /stopverseoftheday command.",
     ]
 
     # Sends the list fo commands to the user
@@ -1432,7 +1478,7 @@ if __name__ == "__main__":
 
 # Text to test regex
 
-'''
+"""
 1 Thessalonians 300:200-311
 Luke 3:16
 1 Timothy 3:1-9
@@ -1459,10 +1505,10 @@ Obadiah chapters 1,4,6
 James chapter 5-10, 15, 16
 Song of songs chapter 5-9
 1Chronicles chapter 3
-'''
+"""
 
 # Test message
-'''
+"""
 - 1 John 1:9 NIV
 - Luke 9:1-10
 - Deuteronomy 1:3,5-7,10,4:2-4,6,8-10 KJV
@@ -1507,4 +1553,4 @@ Obadiah chapters 1,4,6
 James chapter 5-10, 15, 16
 Song of songs chapter 5-9
 1Chronicles chapter 3
-'''
+"""
