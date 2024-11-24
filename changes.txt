@@ -3,7 +3,7 @@ Bible Verses Bot V9 changes
 - Replit is becoming more and more unreliable for bot hosting which is why I changed the telegram bot library to use long polling instead of TCP sockets in the previous version in the first place.
 - Wrote a database wrapper so I don't need to use the replit python package
 - Moved the httpx client to a separate folder so it can be used in the database wrapper to make requests to the database
-- All further changes after the previous are documented on the the Github page for the bot, which is https://github.com/hankertrix/Bible-Verses-Bot
+- All further changes after the previous are documented on the Github page for the bot, which is https://github.com/hankertrix/Bible-Verses-Bot
 
 Bible Verses Bot V8 changes
 - Changed the telegram bot library from pyrogram to pytelegrambotapi as the current bot will miss a ton of messages when it is offline thanks to it using a persistent TCP connection.
