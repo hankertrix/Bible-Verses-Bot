@@ -12,6 +12,7 @@ dependencies = [
     "firebase-admin<7.0.0,>=6.3.0",
     "Cython<4.0.0,>=3.0.7",
     "waitress<4.0.0,>=3.0.0",
+    "setuptools>=75.6.0",
 ]
 name = "bible-verses-bot"
 version = "0.1.0"
