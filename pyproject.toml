@@ -13,6 +13,7 @@ dependencies = [
     "Cython<4.0.0,>=3.0.7",
     "waitress<4.0.0,>=3.0.0",
     "setuptools>=75.6.0",
+    "charset-normalizer>=3.4.0",
 ]
 name = "bible-verses-bot"
 version = "0.1.0"
