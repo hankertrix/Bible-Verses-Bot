@@ -1,8 +1,30 @@
+[project]
+authors = [
+    { name = "Hankertrix", email = "91734413+hankertrix@users.noreply.github.com" },
+]
+requires-python = "<4.0,>=3.10"
+dependencies = [
+    "beautifulsoup4<5.0.0,>=4.12.2",
+    "Flask<4.0.0,>=3.0.0",
+    "httpx<1.0.0,>=0.27.0",
+    "lxml<6.0.0,>=5.2.1",
+    "pyTelegramBotAPI<5.0.0,>=4.14.1",
+    "firebase-admin<7.0.0,>=6.3.0",
+    "Cython<4.0.0,>=3.0.7",
+    "waitress<4.0.0,>=3.0.0",
+]
+name = "bible-verses-bot"
+version = "0.1.0"
+description = ""
+
+[tool.pdm.build]
+includes = []
+
 [tool.poetry]
 name = "bible-verses-bot"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Hankertrix <91734413+hankertrix@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -16,5 +38,5 @@ Cython = "^3.0.7"
 waitress = "^3.0.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "setuptools", "wheel", "Cython"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
