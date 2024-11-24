@@ -17,7 +17,7 @@ dependencies = [
 ]
 name = "bible-verses-bot"
 version = "0.1.0"
-description = ""
+description = "A bot that gives you the full bible verse from a verse reference."
 
 [tool.setuptools]
 py-modules = []
