@@ -41,6 +41,8 @@ services:
         sync: false
       - key: FIREBASE_TYPE
         sync: false
+      - key: PORT
+        value: 8080
       - key: POETRY_VERSION
         value: 1.8.4
       - key: PYTHON_VERSION
