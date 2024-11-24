@@ -18,6 +18,9 @@ name = "bible-verses-bot"
 version = "0.1.0"
 description = ""
 
+[tool.setuptools]
+py-modules = []
+
 [tool.pdm.build]
 includes = []
 
