@@ -5,10 +5,13 @@ services:
     name: Bible Verses Bot
     region: singapore
     plan: free
-    branch: main
+    branch: master
     autoDeploy: true
     runtime: python
-    buildCommand: pip install pdm && python -m pdm install
+    buildCommand: >
+      pip install pdm
+      && python -m pdm install
+      && python setup.py build_ext --inplace
     startCommand: python main.py
     healthCheckPath: /
     envVars:
