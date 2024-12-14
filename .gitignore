@@ -11,6 +11,9 @@ __pycache__/
 # Python virtual environment
 venv/
 
+# Packaging files
+.pdm-python
+
 # Cython created files
 *.so
 *.o
