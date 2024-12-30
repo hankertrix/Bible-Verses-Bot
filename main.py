@@ -362,7 +362,7 @@ Use the /setversion command to change the default bible version.
 You can also use the /listversions command to see the list of bible versions you can change to.
 
 The bot can also send you the verse of the day by using the /verseoftheday or the /votd command.
-The verse of the day would be sent at 12:00pm daily and it will be in the bible version that you have set for the chat. If the bible version you have set for your chat doesn't have the verse of the day, the bot will send the NIV version instead.
+The verse of the day would be sent at 12:00pm GMT+8 daily and it will be in the bible version that you have set for the chat. If the bible version you have set for your chat doesn't have the verse of the day, the bot will send the NIV version instead.
 
 You can unsubscribe from the verse of the day using the /stopverseoftheday or the /svotd command.
 
@@ -533,7 +533,7 @@ def verse_start(message: types.Message) -> None:
     db["subbed"] = list(dict.fromkeys(sub_list))
 
     # Message to be sent to the user
-    sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm daily. \n\nToday's verse is: \n\n{verse_msg}"
+    sub_msg = f"You are now subscribed to the verse of the day! \n\nYou will now receive the verse of the day at 12:00pm GMT+8 daily. \n\nToday's verse is: \n\n{verse_msg}"
 
     # Sends the message
     send_message(sub_msg, message, parse_mode="markdown")
