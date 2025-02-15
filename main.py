@@ -1349,8 +1349,8 @@ def keep_bot_alive() -> None:
             except Exception as e:
                 logging.error(e)
 
-        # Pauses the function for 5 minutes before trying again
-        time.sleep(300)
+        # Pauses the function for 1 minute before trying again
+        time.sleep(60)
 
 
 # Function to run all the threads
