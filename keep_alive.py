@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 app = FastAPI()
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", response_class=HTMLResponse, methods=["GET", "HEAD"])
 def main() -> HTMLResponse:
 	return HTMLResponse("Your bot is alive!")
 
