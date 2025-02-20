@@ -1,22 +1,23 @@
-# Module to keep the bot alive
+# Module to run a webserver to keep the bot running
 
 from threading import Thread
 
-from flask import Flask
-from waitress import serve
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
-app = Flask("")
+app = FastAPI()
 
 
-@app.route("/")
-def main() -> str:
-    return "Your bot is alive!"
+@app.get("/", response_class=HTMLResponse)
+def main() -> HTMLResponse:
+	return HTMLResponse("Your bot is alive!")
 
 
 def run() -> None:
-    serve(app, host="0.0.0.0", port=8080)
+	uvicorn.run(app, host="0.0.0.0", port=8080)
 
 
 def keep_alive() -> None:
-    server = Thread(target=run, daemon=True)
-    server.start()
+	server = Thread(target=run, daemon=True)
+	server.start()
