@@ -41,6 +41,7 @@ ERRORS_TO_BREAK_ON = {
     "Bad Request: need administrator rights in the channel chat",
     "Bad Request: CHAT_RESTRICTED",
     "Bad Request: TOPIC_CLOSED",
+    "Bad Request: CHAT_WRITE_FORBIDDEN",
     "Bad Request: message thread not found",
     "Bad Request: not enough rights to send text messages to the chat",
     "Forbidden: bot was kicked from the supergroup chat",
@@ -49,6 +50,7 @@ ERRORS_TO_BREAK_ON = {
     "Forbidden: user is deactivated",
     "Forbidden: bot was kicked from the channel chat",
     "Forbidden: bot is not a member of the channel chat",
+    "Forbidden: bot is not a member of the supergroup chat",
     "Forbidden: the group chat was deleted",
 }
 
