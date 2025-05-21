@@ -3,7 +3,7 @@ COPY . /app
 WORKDIR /app
 RUN pip install pdm && \
 	python -m pdm install && \
-	eval $(pdm venv activate) && \
+	source ./venv/bin/activate && \
 	python setup.py build_ext --inplace
 
 ENTRYPOINT ["python"]
