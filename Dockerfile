@@ -2,8 +2,8 @@ FROM python:3.12-bookworm
 COPY . /app
 WORKDIR /app
 RUN pip install pdm && \
-	python -m pdm install && \
-	source ./venv/bin/activate && \
+	python -m pdm -o requirements.txt --without-hashes && \
+	pip install -r requirements.txt && \
 	python setup.py build_ext --inplace
 
 ENTRYPOINT ["python"]
