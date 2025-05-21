@@ -1342,7 +1342,7 @@ def keep_bot_alive() -> None:
             try:
 
                 # Gets the bot url
-                s.get("p01--bible-verses-bot--tt6cnnfrcnxq.code.run")
+                s.get("https://p01--bible-verses-bot--tt6cnnfrcnxq.code.run")
 
                 # Breaks the loop if its successful
                 break
