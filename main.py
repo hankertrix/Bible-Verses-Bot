@@ -579,7 +579,7 @@ async def get_verse_of_the_day(version="NIV") -> str:
     verse_msg = ""
 
     # While the verse message is nothing
-    while verse_msg == "":
+    while not verse_msg:
 
         # Using the httpx async client
         async with httpx.AsyncClient() as session:
@@ -649,10 +649,10 @@ async def get_verse_of_the_day(version="NIV") -> str:
         verse_msg = "\n\n".join(verse_msg_list).strip()
 
         # Remove random characters from the verse message, like the asterisks in the MSG version of the bible
-        verse_msg = re.sub("[¶*] *", "", verse_msg)
+        verse_msg = re.sub("[¶*] *", "", verse_msg).strip()
 
         # If the verse message is nothing, change the version to NIV
-        if verse_msg == "":
+        if not verse_msg:
             version = "NIV"
 
     # Returns the verse message
@@ -705,7 +705,7 @@ async def send_verse_of_the_day() -> None:
     for index, item in enumerate(verses_of_the_day):
 
         # If the item is not an exception, continue the loop
-        if type(item) is not Exception:
+        if not isinstance(item, Exception):
             continue
 
         # Keep trying to get the verse of the day until it is successful
