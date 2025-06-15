@@ -646,7 +646,7 @@ async def get_verse_of_the_day(version="NIV") -> str:
             verse_msg_list.append(f"{verse_name} {version}\n{verse_text}")
 
         # The verse message containing the verse name and the verse of the day
-        verse_msg = "\n\n".join(verse_msg_list).strip()
+        verse_msg = "\n\n".join(verse_msg_list)
 
         # Remove random characters from the verse message, like the asterisks in the MSG version of the bible
         verse_msg = re.sub("[¶*] *", "", verse_msg).strip()
@@ -718,7 +718,11 @@ async def send_verse_of_the_day() -> None:
                     versions[index]
                 )
 
-                # Breaks the loop if getting the verse of the day is successful
+                # If the new verse of the day is empty, continue the loop
+                if not new_verse_of_the_day:
+                    continue
+
+                # Break the loop if getting the verse of the day is successful
                 break
 
             # Logs the exception
