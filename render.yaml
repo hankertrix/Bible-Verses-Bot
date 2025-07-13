@@ -9,10 +9,10 @@ services:
     autoDeploy: true
     runtime: python
     buildCommand: >
-      pip install pdm
-      && python -m pdm install
-      && python setup.py build_ext --inplace
-    startCommand: python main.py
+      pip install uv
+      && python -m uv sync
+      && python -m uv run setup.py build_ext --inplace
+    startCommand: uv run main.py
     healthCheckPath: /
     envVars:
       - key: API_KEY
