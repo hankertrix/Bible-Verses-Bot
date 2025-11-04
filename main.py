@@ -795,7 +795,7 @@ async def get_webpages(match_obj_list: list[VerseMatch]) -> list[str]:
                     url = match_obj_list[index].get_url()
 
                     # Gets the new response object
-                    new_response = session.get(url)
+                    new_response = await session.get(url)
 
                     # Sets the response object in the list to the new one
                     responses[index] = new_response
