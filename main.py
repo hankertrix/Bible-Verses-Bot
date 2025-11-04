@@ -13,7 +13,7 @@ import re
 import threading
 import time
 import traceback
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable
 
 import httpx
 from bs4 import BeautifulSoup
@@ -85,7 +85,7 @@ db = Database("/bible_verses_bot")
 
 # The time to send out the verse of the day message in 24 hours
 # It should be set to (12, 0) for 12:00pm
-verse_of_the_day_time: Tuple[int, int] = (12, 0)
+verse_of_the_day_time: tuple[int, int] = (12, 0)
 
 
 class TimeCheck(threading.Thread):
@@ -96,7 +96,7 @@ class TimeCheck(threading.Thread):
     """
 
     # Have empty slots so the a dictionary isn't created for this class
-    __slots__: list = []
+    __slots__: list[str] = []
 
     # List of TimeCheck instances
     instances: list = []
@@ -211,7 +211,7 @@ def debounce_inline_query(duration: float) -> Callable:
     ) -> Callable[[types.InlineQuery], None]:
 
         # The dictionary of inline queries from different users
-        inline_query_dict: Dict[Union[int, str], threading.Timer] = {}
+        inline_query_dict: dict[int | str, threading.Timer] = {}
 
         # The actual debounce function that pauses the inline query handler until the wait duration has passed
         def actual_debounce(inline_query: types.InlineQuery) -> None:
@@ -510,7 +510,7 @@ def list_bible_versions(message: types.Message) -> None:
 
 
 # Gets the specific message id from the database
-def get_id(message_id: int) -> List[int]:
+def get_id(message_id: int) -> list[int]:
     return [chat_id for chat_id in db["subbed"] if chat_id == message_id]
 
 
@@ -758,7 +758,7 @@ async def send_verse_of_the_day() -> None:
 
 
 # Function to get the webpage asynchronously
-async def get_webpages(match_obj_list: List[VerseMatch]) -> List[str]:
+async def get_webpages(match_obj_list: list[VerseMatch]) -> list[str]:
 
     # Use the httpx async client to get the webpages
     async with httpx.AsyncClient() as session:
@@ -822,9 +822,9 @@ def choose_version(default_version: str, bible_version: str) -> str:
 # so I don't have to write the same thing twice for the two threading classes
 # to search the verse
 def search_verse(
-    message: Union[types.Message, str] = "",
-    inline_query: Union[types.InlineQuery, str] = "",
-    inline: Optional[bool] = False,
+    message: types.Message | str = "",
+    inline_query: types.InlineQuery | str = "",
+    inline: bool | None = False,
 ) -> str:
 
     # For measuring performance
@@ -1220,7 +1220,7 @@ def send_message(
     bot_message: str,
     message: types.Message | None = None,
     chat_id: int | str | None = None,
-    message_thread_id: Optional[int] = None,
+    message_thread_id: int | None = None,
     **kwargs,
 ) -> None:
 
