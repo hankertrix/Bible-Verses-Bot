@@ -127,7 +127,7 @@ class TimeCheck(threading.Thread):
             ).day:
 
                 # Calls the function to send the verse of the day message
-                asyncio.run(send_verse_of_the_day())
+                # asyncio.run(send_verse_of_the_day())
 
                 # Set the previous sent time to the current time
                 db["previous_sent_time"] = datetime.datetime.now().isoformat()
@@ -151,7 +151,7 @@ class TimeCheck(threading.Thread):
                     time.sleep(10)
 
                     # Sends the verse of the day
-                    asyncio.run(send_verse_of_the_day())
+                    # asyncio.run(send_verse_of_the_day())
 
                     # Set the previous sent time to the current time
                     db["previous_sent_time"] = (
