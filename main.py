@@ -13,6 +13,7 @@ import re
 import threading
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from typing import Callable
 
 import httpx
@@ -740,21 +741,24 @@ async def send_verse_of_the_day() -> None:
             f"Today's verse is: \n\n{verses_of_the_day[index]}"
         )
 
-    # Iterates the list of chat ids that have subscribed to the verse of the day
-    for chat_id in subbed_list:
+    # Create a function to send the verse of the day to a single chat
+    def send_verse_of_the_day_to_chat(chat_id: str) -> None:
 
-        # Gets the saved version for the chat ID and default to NIV if it isn't set
+        # Get the saved version for the chat ID
+        # and default to NIV if it isn't set
         saved_version = chats_version.get(str(chat_id), "NIV")
 
         # The verse message to send to the person
-        verse_msg = verse_of_the_day_msg_dict.get(saved_version)
+        verse_msg = str(verse_of_the_day_msg_dict.get(saved_version))
 
-        # Sends the verse of the day message to all of the chats using a thread
-        threading.Thread(
-            target=send_message,
-            args=(verse_msg,),
-            kwargs={"chat_id": chat_id, "parse_mode": "markdown"},
-        ).start()
+        # Send the verse of the day message to the chat
+        send_message(verse_msg, chat_id=chat_id, parse_mode="markdown")
+
+    # Use a thread pool executor to reduce memory usage
+    with ThreadPoolExecutor(max_workers=50) as executor:
+
+        # Execute the function to send the verse of the day
+        executor.map(send_verse_of_the_day_to_chat, subbed_list)
 
 
 # Function to get the webpage asynchronously
