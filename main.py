@@ -1228,6 +1228,13 @@ def send_message(
     **kwargs,
 ) -> None:
 
+    # Initialise the topic ID
+    topic_id = None
+
+    # If it isn't none, get the topic ID
+    if message and not message.direct_messages_topic:
+        topic_id = direct_message_topic.id
+
     # While the message is not sent successfully
     while True:
         try:
@@ -1251,6 +1258,7 @@ def send_message(
                     message.chat.id,
                     bot_message,
                     message_thread_id=message.message_thread_id,
+                    direct_messages_topic_id=topic_id,
                     **kwargs,
                 )
 
