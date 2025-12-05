@@ -1232,8 +1232,8 @@ def send_message(
     topic_id = None
 
     # If it isn't none, get the topic ID
-    if message and not message.direct_messages_topic:
-        topic_id = direct_message_topic.id
+    if message and message.direct_messages_topic:
+        topic_id = message.direct_message_topic.id
 
     # While the message is not sent successfully
     while True:
