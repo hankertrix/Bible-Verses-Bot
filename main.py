@@ -1225,6 +1225,7 @@ def send_message(
     message: types.Message | None = None,
     chat_id: int | str | None = None,
     message_thread_id: int | None = None,
+    retries: int = 3,
     **kwargs,
 ) -> None:
 
@@ -1235,8 +1236,11 @@ def send_message(
     if message and message.direct_messages_topic:
         topic_id = message.direct_message_topic.id
 
+    # Initialise the retry count
+    retry_count = 0
+
     # While the message is not sent successfully
-    while True:
+    while retry_count < retries:
         try:
 
             # If the message is not given
@@ -1265,9 +1269,6 @@ def send_message(
                 # Sets the chat ID to the one given by the message
                 chat_id = message.chat.id
 
-            # Breaks the loop if the message is sent successfully
-            break
-
         # Catch block
         except Exception as e:
 
@@ -1293,14 +1294,25 @@ def send_message(
                     # Logs the exception description
                     logging.error(e.description)
 
+        # Increase the retry count
+        retry_count += 1
+
 
 # The function to use in place of bot.reply_to()
 # to force the bot to send a reply even if the connection is lost
 # or an error occurs while sending the reply
-def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
+def reply_to(
+    message: types.Message,
+    bot_message: str,
+    retries: int = 3,
+    **kwargs
+) -> None:
+
+    # Initialise the retry count
+    retry_count = 0
 
     # While the message is not sent successfully
-    while True:
+    while retry_count < retries:
 
         try:
 
@@ -1331,6 +1343,9 @@ def reply_to(message: types.Message, bot_message: str, **kwargs) -> None:
             # Otherwise, logs the error
             else:
                 logging.error(e)
+
+        # Increase the retry count
+        retry_count += 1
 
 
 # Function to start the time checking thread
