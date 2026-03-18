@@ -1269,6 +1269,9 @@ def send_message(
                 # Sets the chat ID to the one given by the message
                 chat_id = message.chat.id
 
+            # Break out of the loop if it is successful
+            break
+
         # Catch block
         except Exception as e:
 
@@ -1294,8 +1297,8 @@ def send_message(
                     # Logs the exception description
                     logging.error(e.description)
 
-        # Increase the retry count
-        retry_count += 1
+            # Increase the retry count
+            retry_count += 1
 
 
 # The function to use in place of bot.reply_to()
