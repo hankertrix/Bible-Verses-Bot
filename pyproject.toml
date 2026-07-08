@@ -2,7 +2,7 @@
 authors = [
     { name = "Hankertrix", email = "91734413+hankertrix@users.noreply.github.com" },
 ]
-requires-python = ">=3.10,<=4.0"
+requires-python = ">=3.11,<=4.0"
 dependencies = [
     "beautifulsoup4<5.0.0,>=4.12.2",
     "httpx<1.0.0,>=0.27.0",
@@ -15,7 +15,6 @@ dependencies = [
     "fastapi>=0.115.8",
     "uvicorn>=0.34.0",
     "uvloop>=0.21.0",
-    "cryptography==49.0.0",
 ]
 name = "bible-verses-bot"
 version = "0.1.0"
