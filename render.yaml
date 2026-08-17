@@ -9,9 +9,8 @@ services:
     autoDeploy: true
     runtime: python
     buildCommand: >
-      pip install uv
-      && python -m uv sync
-      && python -m uv run setup.py build_ext --inplace
+      pip install uv && python -m uv sync && python -m uv run setup.py build_ext
+      --inplace
     startCommand: uv run main.py
     healthCheckPath: /
     envVars:

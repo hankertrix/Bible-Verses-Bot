@@ -1,20 +1,20 @@
 [project]
 authors = [
-    { name = "Hankertrix", email = "91734413+hankertrix@users.noreply.github.com" },
+	{ name = "Hankertrix", email = "91734413+hankertrix@users.noreply.github.com" },
 ]
 requires-python = ">=3.11,<=4.0"
 dependencies = [
-    "beautifulsoup4<5.0.0,>=4.12.2",
-    "httpx<1.0.0,>=0.27.0",
-    "lxml<7.0.0,>=6.0.0",
-    "pyTelegramBotAPI<5.0.0,>=4.14.1",
-    "firebase-admin<8.0.0,>=7.0.0",
-    "Cython<4.0.0,>=3.0.7",
-    "setuptools>=80.8.0",
-    "charset-normalizer>=3.4.0",
-    "fastapi>=0.115.8",
-    "uvicorn>=0.34.0",
-    "uvloop>=0.21.0",
+	"beautifulsoup4<5.0.0,>=4.12.2",
+	"httpx<1.0.0,>=0.27.0",
+	"lxml<7.0.0,>=6.0.0",
+	"pyTelegramBotAPI<5.0.0,>=4.14.1",
+	"firebase-admin<8.0.0,>=7.0.0",
+	"Cython<4.0.0,>=3.0.7",
+	"setuptools>=80.8.0",
+	"charset-normalizer>=3.4.0",
+	"fastapi>=0.115.8",
+	"uvicorn>=0.34.0",
+	"uvloop>=0.21.0",
 ]
 name = "bible-verses-bot"
 version = "0.1.0"
