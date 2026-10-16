@@ -95,13 +95,13 @@ class Database(abc.MutableMapping):
         # Replace all illegal characters in the key
         key = replace_illegal_with_legal_char(key)
 
+        # If no value is found, raise a KeyError
+        if key not in self.dic:
+            raise KeyError
+
         # Gets the value from the dictionary in-memory
         # This should be in sync with the database
         value = self.dic.get(key)
-
-        # If no value is found, raise a KeyError
-        if not value:
-            raise KeyError
 
         # If the value is a dictionary
         if isinstance(value, abc.Mapping):

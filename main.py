@@ -14,7 +14,7 @@ import threading
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
-from typing import Callable
+from collections.abc import Callable
 
 import httpx
 from bs4 import BeautifulSoup
@@ -468,7 +468,7 @@ def set_version(message: types.Message, ctx: str = "") -> None:
             # Saves the new version given to the database only when it's not NIV to save space
             version_dict[message_id] = version_given
 
-        # The message to notifiy the chat that the version has changed
+        # The message to notify the chat that the version has changed
         version_changed_msg = (
             f"The current bible version has changed to {version_given}."
         )
@@ -1096,7 +1096,7 @@ def split_message(
 ) -> None:
 
     # List to append the parts of the long message
-    splitted_list = []
+    split_list = []
 
     # Get the length of the text
     text_len = len(text)
@@ -1105,7 +1105,7 @@ def split_message(
     if text_len <= max_len:
 
         # Sends the text directly without splitting if the message is within the limit
-        splitted_list.append(text)
+        split_list.append(text)
 
     # Splits the long message into different parts
     else:
@@ -1126,7 +1126,7 @@ def split_message(
             index = iterate_text(start_index, text_part)
 
             # Appends the part of the message
-            splitted_list.append(text[start_index:index])
+            split_list.append(text[start_index:index])
 
             # Sets the start index to the index previously gotten from the iterate_text() function
             start_index = index
@@ -1138,13 +1138,13 @@ def split_message(
             if end_index >= text_len:
 
                 # Appends the final part of the text to send to the list of message parts
-                splitted_list.append(text[start_index:])
+                split_list.append(text[start_index:])
 
                 # Breaks the loop
                 break
 
     # Iterates the list of the parts of the message
-    for index, part in enumerate(splitted_list):
+    for part in split_list:
 
         # Reply to the original message sent by the user
         reply_to(message, part, **kwargs)
@@ -1427,7 +1427,7 @@ def command_handler(message: types.Message) -> None:
         "svotd - Shortcut for the /stopverseoftheday command.",
     ]
 
-    # Sends the list fo commands to the user
+    # Sends the list of commands to the user
     send_message("\n".join(commands_list), message)
 
 
@@ -1462,7 +1462,7 @@ if __name__ == "__main__":
             # threading.Thread(target=lambda: asyncio.run(send_verse_of_the_day())).start()
 
             # Polls the telegram servers for a response
-            bot.infinity_polling()
+            bot.infinity_polling(logger_level=logging.DEBUG)
 
         # Handles a ConnectionResetError or a RequestTimedOutError
         except Exception:
